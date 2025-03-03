@@ -73,17 +73,21 @@ bot.on('message', async (ctx: BotContext) => {
   }
 });
 
+// Khởi động bot và log ngay lập tức
+logger.info('Bot đang khởi động...');
 bot.launch().then(() => {
-  logger.info('Bot đã khởi động thành công');
+  // Log này chỉ chạy khi bot dừng (không cần thiết cho khởi động)
+  logger.info('Bot đã dừng.');
 });
 
+// Xử lý khi dừng bằng tín hiệu hệ thống
 process.once('SIGINT', () => {
-  logger.info('Bot đang dừng (SIGINT)');
+  logger.info('Bot đang dừng bởi SIGINT');
   bot.stop('SIGINT');
 });
 
 process.once('SIGTERM', () => {
-  logger.info('Bot đang dừng (SIGTERM)');
+  logger.info('Bot đang dừng bởi SIGTERM');
   bot.stop('SIGTERM');
 });
 
