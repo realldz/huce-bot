@@ -1,16 +1,6 @@
 import { BotContext } from '../bot';
-import logger from '../../utils/logger.js'; // Sẽ đổi thành .ts sau
-
-// Định nghĩa interface cho user từ database
-interface User {
-  telegramId: string;
-  studentId: string;
-  token: string;
-  idSinhVien: number;
-}
-
-// Định nghĩa interface cho context cơ bản
-interface LogoutContext extends BotContext {}
+import logger from '../../utils/logger';
+import { User } from '../../types/user'
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
@@ -32,7 +22,7 @@ export default {
       }
 
       await userModel.deleteUser(ctx.from.id.toString());
-      logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) đã đăng xuất`);
+      logger.info(`Người dùng @${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) đã đăng xuất`);
       ctx.reply('Đăng xuất thành công! Dùng /login để đăng nhập lại.');
     } catch (error) {
       const err = error as Error; // Ép kiểu error để lấy .message

@@ -1,37 +1,13 @@
 import { BotContext } from '../bot';
-import { formatSchedule } from '../../utils/helpers.js'; // Sẽ đổi thành .ts sau
-import logger from '../../utils/logger.js';
-
-// Định nghĩa interface cho dữ liệu từ API getSchedule
-interface ScheduleData {
-  result: ScheduleItem[];
-}
-
-interface ScheduleItem {
-  ngay: string;
-  tietHocThi: string;
-  tenMonHoc: string;
-  tenPhong: string;
-  loaiLich: number;
-  isTamNgung: boolean;
-  chiTiets: { label: string; value: string }[];
-}
-
-// Định nghĩa interface cho context với state tùy chỉnh
-interface ScheduleContext extends BotContext {
-  state: {
-    user: {
-      token: string;
-    };
-  };
-}
+import { formatSchedule } from '../../utils/helpers';
+import logger from '../../utils/logger';
+import { ScheduleResponse } from '../../types/schedule';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
     const schoolApi = (await import('../../api/schoolApi.js')).default; // Sẽ đổi thành .ts sau
     if (!ctx.from || !ctx.message) {
       logger.error('Không có thông tin người gửi trong context');
-      ctx.reply('Có lỗi xử lý yêu cầu, thử lại sau!');
       return;
     }
     // Type guard để kiểm tra xem message có text không
@@ -116,7 +92,7 @@ export default {
         return ;
       }
 
-      const schedule: ScheduleData = await schoolApi.getSchedule(ctx.state.user.token, tuNgay, denNgay);
+      const schedule: ScheduleResponse = await schoolApi.getSchedule(ctx.state.user.token, tuNgay, denNgay);
       const formatted: string = formatSchedule(schedule);
       ctx.reply(`${timeRangeMessage}\n\n${formatted}`, { parse_mode: 'HTML' });
     } catch (error) {

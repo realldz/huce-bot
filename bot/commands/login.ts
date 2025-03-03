@@ -1,22 +1,7 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
-
-// Định nghĩa interface cho dữ liệu từ API login
-interface LoginResponse {
-  token: string;
-  idSinhVien: number;
-}
-
-// Định nghĩa interface cho user từ database
-interface User {
-  telegramId: string;
-  studentId: string;
-  token: string;
-  idSinhVien: number;
-}
-
-// Định nghĩa interface cho context cơ bản
-interface LoginContext extends BotContext {}
+import { User } from '../../types/user';
+import { LoginResponse } from '../../types/auth';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

@@ -1,9 +1,6 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger'; 
 
-// Định nghĩa interface cho context cơ bản
-interface HelpContext extends BotContext {}
-
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
     const helpText: string = `

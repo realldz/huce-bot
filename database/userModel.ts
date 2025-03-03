@@ -1,27 +1,11 @@
-import sqlite3 from 'sqlite3';
 import db from './db.js'; // Giữ nguyên import này, sẽ đổi sang .ts sau
-
-// Định nghĩa interface cho dữ liệu user
-interface User {
-  telegramId: string;
-  studentId: string;
-  token: string;
-  idSinhVien: number;
-}
-
-// Định nghĩa interface cho row trả về từ db.get
-interface UserRow {
-  telegramId: string;
-  studentId: string;
-  token: string;
-  idSinhVien: number;
-}
+import { User } from '../types/common.js';
 
 class UserModel {
   async saveUser(telegramId: string, studentId: string, token: string, idSinhVien: number): Promise<void> {
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT studentId FROM users WHERE telegramId = ?`,
+        `SELECT studentId FROM users WHERE telegramId = ?`, 
         [telegramId],
         (err: Error | null, row: { studentId: string } | undefined) => {
           if (err) return reject(err);
@@ -42,12 +26,12 @@ class UserModel {
     });
   }
 
-  async getUser(telegramId: string): Promise<UserRow | undefined> {
+  async getUser(telegramId: string): Promise<User | undefined> {
     return new Promise((resolve, reject) => {
       db.get(
         `SELECT * FROM users WHERE telegramId = ?`,
         [telegramId],
-        (err: Error | null, row: UserRow | undefined) => {
+        (err: Error | null, row: User | undefined) => {
           if (err) reject(err);
           else resolve(row);
         }

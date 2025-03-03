@@ -1,22 +1,5 @@
+import { StudentInfoResponse } from '../../types/studentInfo';
 import { BotContext } from '../bot';
-
-// Định nghĩa interface cho dữ liệu từ API getStudentInfo
-interface StudentInfoResponse {
-  result: {
-    hoTen: string;
-    hinhAnh: string | null; // Có thể không có ảnh
-    chiTiets: { label: string; value: string }[];
-  };
-}
-
-// Định nghĩa interface cho context với state tùy chỉnh
-interface InfoContext extends BotContext {
-  state: {
-    user: {
-      token: string;
-    };
-  };
-}
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

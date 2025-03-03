@@ -1,19 +1,9 @@
 import { BotContext } from '../bot';
-import { formatNotices } from '../../utils/helpers.js'; // Sẽ đổi thành .ts sau
+import { formatNotices } from '../../utils/helpers';
 
-// Định nghĩa interface cho dữ liệu từ API getNotices
 interface Notice {
   title: string;
   content: string;
-}
-
-// Định nghĩa interface cho context với state tùy chỉnh
-interface NoticesContext extends BotContext {
-  state: {
-    user: {
-      token: string;
-    };
-  };
 }
 
 export default {
