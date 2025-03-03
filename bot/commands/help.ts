@@ -1,8 +1,12 @@
-import logger from '../../utils/logger.js';
+import { BotContext } from '../bot';
+import logger from '../../utils/logger'; 
+
+// Định nghĩa interface cho context cơ bản
+interface HelpContext extends BotContext {}
 
 export default {
-  handler: async (ctx) => {
-    const helpText = `
+  handler: async (ctx: BotContext): Promise<void> => {
+    const helpText: string = `
 <b>Danh sách lệnh:</b>
 /help - Hiển thị menu này
 /login <code>mã_sinh_viên</code> <code>mật_khẩu</code> - Đăng nhập bằng tài khoản sinh viên
@@ -19,7 +23,7 @@ export default {
 - Phải đăng nhập trước khi dùng các lệnh /schedule, /info, /grades
 - Sai lệnh? Dùng /help để xem lại!
     `;
-    logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) yêu cầu menu /help`);
+    logger.info(`Người dùng ${ctx.from?.username || 'N/A'} (ID: ${ctx.from?.id}) yêu cầu menu /help`);
     await ctx.reply(helpText, { parse_mode: 'HTML' });
   },
 };

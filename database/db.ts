@@ -1,7 +1,8 @@
 import sqlite3 from 'sqlite3';
-import config from '../config/config.js';
+import config from '../config/config.js'; // Giữ nguyên import này, sẽ đổi sang .ts sau
 
-const db = new sqlite3.Database(config.DB_PATH, (err) => {
+// Định nghĩa type cho sqlite3.Database
+const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
   if (err) {
     console.error('Error connecting to SQLite:', err);
   } else {
@@ -9,6 +10,7 @@ const db = new sqlite3.Database(config.DB_PATH, (err) => {
   }
 });
 
+// Tạo bảng users
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
