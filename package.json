@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "bun index.ts",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn index.type"
+    "dev": "bun --watch run index.ts"
   },
   "keywords": [],
   "author": "",
