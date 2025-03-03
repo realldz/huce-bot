@@ -1,6 +1,7 @@
 import winston from 'winston';
 
-const logger = winston.createLogger({
+// Định nghĩa type cho logger instance
+const logger: winston.Logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),

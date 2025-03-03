@@ -1,11 +1,11 @@
 {
   "name": "huce-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "bun index.ts",
+    "build": "tsc",
+    "dev": "bun --watch run index.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,12 +17,17 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "huce-bot": "file:",
-    "node-telegram-bot-api": "^0.66.0",
     "sqlite3": "^5.1.7",
-    "telegraf": "^4.16.3",
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "@telegraf/types": "^8.3.1",
+    "@types/node": "^22.13.8",
+    "nodemon": "^3.1.9",
+    "telegraf": "^4.16.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }

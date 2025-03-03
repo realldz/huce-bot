@@ -1,12 +1,13 @@
-import db from './db.js';
+import db from './db.js'; // Giữ nguyên import này, sẽ đổi sang .ts sau
+import { User } from '../types/common.js';
 
 class UserModel {
-  async saveUser(telegramId, studentId, token, idSinhVien) {
+  async saveUser(telegramId: string, studentId: string, token: string, idSinhVien: number): Promise<void> {
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT studentId FROM users WHERE telegramId = ?`,
+        `SELECT studentId FROM users WHERE telegramId = ?`, 
         [telegramId],
-        (err, row) => {
+        (err: Error | null, row: { studentId: string } | undefined) => {
           if (err) return reject(err);
           if (row && row.studentId !== studentId) {
             return reject(new Error('Tài khoản Telegram này đã gắn với mã sinh viên khác!'));
@@ -15,7 +16,7 @@ class UserModel {
           db.run(
             `INSERT OR REPLACE INTO users (telegramId, studentId, token, idSinhVien) VALUES (?, ?, ?, ?)`,
             [telegramId, studentId, token, idSinhVien],
-            (err) => {
+            (err: Error | null) => {
               if (err) reject(err);
               else resolve();
             }
@@ -25,12 +26,12 @@ class UserModel {
     });
   }
 
-  getUser(telegramId) {
+  async getUser(telegramId: string): Promise<User | undefined> {
     return new Promise((resolve, reject) => {
       db.get(
         `SELECT * FROM users WHERE telegramId = ?`,
         [telegramId],
-        (err, row) => {
+        (err: Error | null, row: User | undefined) => {
           if (err) reject(err);
           else resolve(row);
         }
@@ -38,12 +39,12 @@ class UserModel {
     });
   }
 
-  async deleteUser(telegramId) {
+  async deleteUser(telegramId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       db.run(
         `DELETE FROM users WHERE telegramId = ?`,
         [telegramId],
-        (err) => {
+        (err: Error | null) => {
           if (err) reject(err);
           else resolve();
         }

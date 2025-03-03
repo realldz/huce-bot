@@ -1,24 +1,45 @@
-import { formatSchedule } from '../../utils/helpers.js';
+import { BotContext } from '../bot';
+import { formatSchedule } from '../../utils/helpers';
+import logger from '../../utils/logger';
+import { ScheduleResponse } from '../../types/schedule';
 
 export default {
-  handler: async (ctx) => {
-    const schoolApi = (await import('../../api/schoolApi.js')).default;
-    const args = ctx.message.text.split(' ').slice(1); // Lấy tham số sau /schedule
+  handler: async (ctx: BotContext): Promise<void> => {
+    const schoolApi = (await import('../../api/schoolApi.js')).default; // Sẽ đổi thành .ts sau
+    if (!ctx.from || !ctx.message) {
+      logger.error('Không có thông tin người gửi trong context');
+      return;
+    }
+    // Type guard để kiểm tra xem message có text không
+    if (!('text' in ctx.message)) {
+      logger.error('Message không phải dạng text');
+      ctx.reply('Vui lòng gửi lệnh dạng text, ví dụ: /login <mã_sinh_viên> <mật_khẩu>');
+      return;
+    }
+    const args: string[] = ctx.message?.text.split(' ').slice(1); // Lấy tham số sau /schedule
 
-    let tuNgay = null;
-    let denNgay = null;
-    let timeRangeMessage = '';
+    let tuNgay: string | null = null;
+    let denNgay: string | null = null;
+    let timeRangeMessage: string = '';
 
     // Hàm kiểm tra và chuyển định dạng ngày từ DD/MM/YYYY sang YYYY-MM-DDTHH:mm:ss.000
-    const formatDate = (dateStr) => {
+    const formatDate = (dateStr: string): string => {
       const [day, month, year] = dateStr.split('/');
-      const dayNum = parseInt(day, 10);
-      const monthNum = parseInt(month, 10);
-      const yearNum = parseInt(year, 10);
+      const dayNum: number = parseInt(day, 10);
+      const monthNum: number = parseInt(month, 10);
+      const yearNum: number = parseInt(year, 10);
 
       // Kiểm tra ngày hợp lệ
-      if (isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum) ||
-          dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12 || yearNum < 2000) {
+      if (
+        isNaN(dayNum) ||
+        isNaN(monthNum) ||
+        isNaN(yearNum) ||
+        dayNum < 1 ||
+        dayNum > 31 ||
+        monthNum < 1 ||
+        monthNum > 12 ||
+        yearNum < 2000
+      ) {
         throw new Error('Ngày không hợp lệ! Dùng định dạng DD/MM/YYYY.');
       }
 
@@ -31,7 +52,7 @@ export default {
     };
 
     // Hàm lấy ngày đầu và cuối tuần hiện tại
-    const getWeekRange = () => {
+    const getWeekRange = (): { tuNgay: string; denNgay: string } => {
       const today = new Date();
       const firstDay = new Date(today.setDate(today.getDate() - today.getDay())); // Chủ nhật
       const lastDay = new Date(today.setDate(firstDay.getDate() + 6)); // Thứ bảy
@@ -45,7 +66,7 @@ export default {
     try {
       if (args.length === 0) {
         // /schedule: Lấy lịch hôm nay
-        const today = new Date().toISOString().split('T')[0];
+        const today: string = new Date().toISOString().split('T')[0];
         timeRangeMessage = `<b>Ngày:</b> ${today.split('-')[2]}/${today.split('-')[1]}`;
       } else if (args.length === 1 && args[0].toLowerCase() === 'week') {
         // /schedule week: Lấy lịch tuần này
@@ -67,14 +88,15 @@ export default {
         }
         timeRangeMessage = `<b>Khoảng thời gian:</b> ${args[0]} - ${args[1]}`;
       } else {
-        return ctx.reply('Sai cú pháp! Dùng: /schedule hoặc /schedule week hoặc /schedule DD/MM/YYYY hoặc /schedule DD/MM/YYYY DD/MM/YYYY');
+        ctx.reply('Sai cú pháp! Dùng: /schedule hoặc /schedule week hoặc /schedule DD/MM/YYYY hoặc /schedule DD/MM/YYYY DD/MM/YYYY');
+        return ;
       }
 
-      const schedule = await schoolApi.getSchedule(ctx.state.user.token, tuNgay, denNgay);
-      const formatted = formatSchedule(schedule);
+      const schedule: ScheduleResponse = await schoolApi.getSchedule(ctx.state.user.token, tuNgay, denNgay);
+      const formatted: string = formatSchedule(schedule);
       ctx.reply(`${timeRangeMessage}\n\n${formatted}`, { parse_mode: 'HTML' });
     } catch (error) {
-      ctx.reply(error.message || 'Có lỗi khi lấy lịch học!');
+      ctx.reply((error as Error).message || 'Có lỗi khi lấy lịch học!');
     }
-  }
+  },
 };
