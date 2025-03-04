@@ -1,13 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import https from 'https';
 import config from '../config/config';
-import { AuthResult, LoginResponse } from '../types/auth';
-import { ScheduleResponse } from '../types/schedule';
-import { StudentInfoResponse } from '../types/studentInfo';
-import { GradesResponse } from '../types/grades';
-import { GradeDetailResponse } from '../types/gradeDetail';
-import { Notice } from '../types/notices';
-import { AxiosError } from '../types/common';
+import { AuthResult, LoginResponse } from '../interfaces/auth';
+import { ScheduleResponse } from '../interfaces/schedule';
+import { StudentInfoResponse } from '../interfaces/studentInfo';
+import { GradesResponse } from '../interfaces/grades';
+import { GradeDetailResponse } from '../interfaces/gradeDetail';
+import { Notice } from '../interfaces/notices';
+import { AxiosError } from '../interfaces/common';
 
 const customAxios: AxiosInstance = axios.create({
   httpsAgent: new https.Agent({

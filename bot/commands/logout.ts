@@ -1,6 +1,6 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
-import { User } from '../../types/user'
+import { User } from '../../interfaces/user'
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

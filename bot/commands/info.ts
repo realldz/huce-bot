@@ -1,4 +1,4 @@
-import { StudentInfoResponse } from '../../types/studentInfo';
+import { StudentInfoResponse } from '../../interfaces/studentInfo';
 import { BotContext } from '../bot';
 
 export default {

@@ -1,4 +1,4 @@
-import { User } from '../../types/user';
+import { User } from '../../interfaces/user';
 import { BotContext } from '../bot';
 
 // Định nghĩa type cho next function trong middleware của Telegraf

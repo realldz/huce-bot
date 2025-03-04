@@ -1,7 +1,7 @@
 import { BotContext } from '../bot';
 import { formatSchedule } from '../../utils/helpers';
 import logger from '../../utils/logger';
-import { ScheduleResponse } from '../../types/schedule';
+import { ScheduleResponse } from '../../interfaces/schedule';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

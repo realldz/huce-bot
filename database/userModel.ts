@@ -1,5 +1,5 @@
 import db from './db.js'; // Giữ nguyên import này, sẽ đổi sang .ts sau
-import { User } from '../types/common.js';
+import { User } from '../interfaces/common.js';
 
 class UserModel {
   async saveUser(telegramId: string, studentId: string, token: string, idSinhVien: number): Promise<void> {

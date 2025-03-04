@@ -1,7 +1,7 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
-import { User } from '../../types/user';
-import { AuthResult } from '../../types/auth';
+import { User } from '../../interfaces/user';
+import { AuthResult } from '../../interfaces/auth';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

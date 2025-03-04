@@ -2,8 +2,8 @@ import { Telegraf, Context } from 'telegraf';
 import { Update } from '@telegraf/types/update';
 import { BotContext } from '../bot'; // Import BotContext từ bot.ts
 import logger from '../../utils/logger';
-import { GradesResponse } from '../../types/grades';
-import { GradeDetailResponse } from '../../types/gradeDetail';
+import { GradesResponse } from '../../interfaces/grades';
+import { GradeDetailResponse } from '../../interfaces/gradeDetail';
 
 // Định nghĩa interface cho dữ liệu cache
 interface CacheData {
