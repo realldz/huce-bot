@@ -86,6 +86,9 @@ export default {
         if (new Date(tuNgay) > new Date(denNgay)) {
           throw new Error('Ngày bắt đầu phải trước ngày kết thúc!');
         }
+        if (new Date(denNgay).getTime() - new Date(tuNgay).getTime() > 31 * 24 * 60 * 60 * 1000) {
+          throw new Error('Khoảng thời gian không được quá 31 ngày!');
+        }
         timeRangeMessage = `<b>Khoảng thời gian:</b> ${args[0]} - ${args[1]}`;
       } else {
         ctx.reply('Sai cú pháp! Dùng: /schedule hoặc /schedule week hoặc /schedule DD/MM/YYYY hoặc /schedule DD/MM/YYYY DD/MM/YYYY');
