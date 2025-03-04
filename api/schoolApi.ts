@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import https from 'https';
-import config from '../config/config.js'; // Sẽ đổi thành .ts sau
-import { LoginResponse, AuthResult } from '../types/auth';
+import config from '../config/config';
+import { AuthResult, LoginResponse } from '../types/auth';
 import { ScheduleResponse } from '../types/schedule';
 import { StudentInfoResponse } from '../types/studentInfo';
 import { GradesResponse } from '../types/grades';
@@ -19,7 +19,7 @@ class SchoolApi {
   async login(studentId: string, password: string): Promise<AuthResult> {
     const params = new URLSearchParams();
     params.append('url_uni', config.SCHOOL_API_URL);
-    params.append('username', `${studentId}2HUCE`);
+    params.append('username', `${studentId}2${config.SCHOOL_CODE}`);
     params.append('password', password);
     params.append('client_secret', config.CLIENT_SECRET);
     params.append('client_id', 'mobile_flutter');
