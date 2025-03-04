@@ -20,7 +20,6 @@ export default {
 - Phải đăng nhập trước khi dùng các lệnh /schedule, /info, /grades
 - Sai lệnh? Dùng /help để xem lại!
     `;
-    logger.info(`Người dùng ${ctx.from?.username || 'N/A'} (ID: ${ctx.from?.id}) yêu cầu menu /help`);
     await ctx.reply(helpText, { parse_mode: 'HTML' });
   },
 };
