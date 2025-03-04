@@ -1,7 +1,7 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { User } from '../../types/user';
-import { LoginResponse } from '../../types/auth';
+import { AuthResult } from '../../types/auth';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
@@ -36,7 +36,7 @@ export default {
         return;
       }
 
-      const { token, idSinhVien }: LoginResponse = await schoolApi.login(studentId, password);
+      const { token, idSinhVien }: AuthResult = await schoolApi.login(studentId, password);
       await userModel.saveUser(ctx.from.id.toString(), studentId, token, idSinhVien);
       logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) đăng nhập thành công với mã SV: ${studentId}`);
       ctx.reply('Đăng nhập thành công! Dùng /help để xem danh sách lệnh.');
