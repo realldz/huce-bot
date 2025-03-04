@@ -51,6 +51,15 @@ class UserModel {
       );
     });
   }
+
+  async getAllUsers(): Promise<User[] | undefined> {  
+    return new Promise((resolve, reject) => {
+      db.all(`SELECT * FROM users`, (err: Error | null, rows: User[]) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
 }
 
 export default new UserModel();
