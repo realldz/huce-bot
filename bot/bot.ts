@@ -1,15 +1,16 @@
 import { Telegraf, Context } from 'telegraf';
-import config from '../config/config'; 
-import { requireAuth } from './middleware/auth'; 
-import startCmd from './commands/start'; 
-import loginCmd from './commands/login'; 
-import scheduleCmd from './commands/schedule'; 
-import noticesCmd from './commands/notices'; 
-import infoCmd from './commands/info'; 
-import gradesCmd from './commands/grades'; 
-import logoutCmd from './commands/logout'; 
-import helpCmd from './commands/help'; 
-import logger from '../utils/logger'; 
+import config from '../config/config';
+import { requireAuth } from './middleware/auth';
+import startCmd from './commands/start';
+import loginCmd from './commands/login';
+import scheduleCmd from './commands/schedule';
+import noticesCmd from './commands/notices';
+import infoCmd from './commands/info';
+import gradesCmd from './commands/grades';
+import logoutCmd from './commands/logout';
+import helpCmd from './commands/help';
+import newsCmd from './commands/news';
+import logger from '../utils/logger';
 
 // Định nghĩa interface cho context với state tùy chỉnh
 export interface BotContext extends Context {
@@ -25,7 +26,7 @@ const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN);
 bot.use(async (ctx: BotContext, next) => {
   if (!ctx.from) {
     logger.error('Không có thông tin người gửi trong context');
-    return; // Không reply vì không biết gửi tới đâu
+    return;
   }
 
   const userId: number = ctx.from.id;
@@ -44,6 +45,14 @@ bot.use(async (ctx: BotContext, next) => {
   await next();
 });
 
+// Áp dụng requireAuth cho tất cả bot.action
+bot.use((ctx: BotContext, next) => {
+  if (ctx.callbackQuery) {
+    return requireAuth(ctx, next);
+  }
+  return next();
+});
+
 // Đăng ký lệnh với type handler
 bot.start(startCmd.handler);
 bot.command('login', loginCmd.handler);
@@ -51,6 +60,7 @@ bot.command('schedule', requireAuth, scheduleCmd.handler);
 bot.command('notices', requireAuth, noticesCmd.handler);
 bot.command('info', requireAuth, infoCmd.handler);
 bot.command('grades', requireAuth, gradesCmd.handler(bot));
+bot.command('news', requireAuth, newsCmd.handler(bot));
 bot.command('logout', logoutCmd.handler);
 bot.command('help', helpCmd.handler);
 
@@ -63,7 +73,7 @@ bot.on('message', async (ctx: BotContext) => {
 
   if (!('text' in ctx.message)) {
     logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) gửi message không phải text`);
-    return; // Không reply nếu không phải text
+    return;
   }
 
   const text: string = ctx.message.text;

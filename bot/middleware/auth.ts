@@ -1,4 +1,5 @@
 import { User } from '../../interfaces/user';
+import logger from '../../utils/logger';
 import { BotContext } from '../bot';
 
 // Định nghĩa type cho next function trong middleware của Telegraf
@@ -16,6 +17,7 @@ export const requireAuth = async (ctx: BotContext, next: NextFn): Promise<void> 
     ctx.reply('Mày chưa đăng nhập! Dùng /login trước.');
     return;
   }
+
   ctx.state.user = user; // Lưu user vào state
   return next();
 };

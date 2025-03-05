@@ -3,6 +3,7 @@ import { BotContext } from '../bot';
 import { scheduleJob } from 'node-schedule';
 import logger from '../../utils/logger';
 import { dailyScheduleTask } from './dailySchedule';
+import { dailyNewsTask } from './dailyNews';
 
 
 // Interface cho scheduled task
@@ -18,6 +19,11 @@ const tasks: ScheduledTask[] = [
     name: 'Daily Schedule Notification',
     cron: '0 0 6 * * *', // 6:00 sáng mỗi ngày
     execute: dailyScheduleTask,
+  },
+  {
+    name: 'Daily News Notification',
+    cron: '0 0 12,17 * * *', // 7:00 sáng
+    execute: dailyNewsTask,
   },
   // Thêm task khác ở đây trong tương lai
 ];

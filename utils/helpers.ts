@@ -1,3 +1,6 @@
+import { load } from 'cheerio';
+import config from '../config/config';
+
 // Định nghĩa interface cho dữ liệu lịch học từ API
 interface ScheduleItem {
   ngay: string;
@@ -56,6 +59,24 @@ export function formatSchedule(scheduleData: ScheduleData): string {
     .join("\n\n");
 
   return rows;
+}
+
+export function parseNewsFromHtml(html: string): { id: string; date: string; title: string; link: string }[] {
+  const $ = load(html);
+  const newsItems: { id: string; date: string; title: string; link: string }[] = [];
+
+  $('.item-notifi').each((_, element) => {
+    const dateRaw = $(element).find('.date-notifi').text().trim().replace(/\s+/g, ' ');
+    const [__, month, day] = dateRaw.split(' ');
+    const formattedDate = `${day} Tháng ${month}`; // "25 Tháng 02"
+    const title = $(element).find('.title-notifi').text().trim();
+    const link = $(element).find('.view-more a.view').attr('href');
+    const id = $(element).find('.title-notifi').attr('data-post-id') || '';
+    const fullLink = link ? `${config.SCHOOL_API_BASEURL}${link}` : '';
+    if (id) newsItems.push({ id, date: formattedDate, title, link: fullLink });
+  });
+
+  return newsItems;
 }
 
 export function formatNotices(notices: Notice[]): string {

@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import config from '../config/config.js'; // Giữ nguyên import này, sẽ đổi sang .ts sau
+import config from '../config/config.js'; // Giữ nguyên như mày yêu cầu
 
 // Định nghĩa type cho sqlite3.Database
 const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
@@ -10,7 +10,7 @@ const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | 
   }
 });
 
-// Tạo bảng users
+// Tạo bảng users và sent_news
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
@@ -18,6 +18,11 @@ db.serialize(() => {
       studentId TEXT UNIQUE,
       token TEXT,
       idSinhVien INTEGER
+    )
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS sent_news (
+      newsId TEXT PRIMARY KEY
     )
   `);
 });
