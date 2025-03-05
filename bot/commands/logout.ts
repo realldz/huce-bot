@@ -17,7 +17,7 @@ export default {
       // Kiểm tra xem người dùng đã đăng nhập chưa
       const existingUser: User | undefined = await userModel.getUser(ctx.from.id.toString());
       if (!existingUser) {
-        ctx.reply('Mày chưa đăng nhập mà! Dùng /login để đăng nhập.');
+        ctx.reply('Bạn chưa đăng nhập mà! Dùng /login để đăng nhập.');
         return;
       }
 

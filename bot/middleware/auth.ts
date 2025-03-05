@@ -14,7 +14,7 @@ export const requireAuth = async (ctx: BotContext, next: NextFn): Promise<void> 
   }
   const user: User | undefined = await userModel.getUser(ctx.from.id.toString());
   if (!user || !user.token) {
-    ctx.reply('Mày chưa đăng nhập! Dùng /login trước.');
+    ctx.reply('Bạn chưa đăng nhập! Dùng /login trước.');
     return;
   }
 
