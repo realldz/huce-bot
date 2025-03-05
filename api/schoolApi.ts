@@ -23,7 +23,7 @@ const customAxios: AxiosInstance = axios.create({
 class SchoolApi {
   async login(studentId: string, password: string): Promise<AuthResult> {
     const params = new URLSearchParams();
-    params.append('url_uni', config.SCHOOL_API_BASEURL);
+    params.append('url_uni', config.SCHOOL_API_BASEURL+'/AppSVGV');
     params.append('username', `${studentId}2${config.SCHOOL_CODE}`);
     params.append('password', password);
     params.append('client_secret', config.CLIENT_SECRET);
