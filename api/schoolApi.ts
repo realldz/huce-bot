@@ -13,6 +13,7 @@ import { NewsCategory } from '../interfaces/newsCategory';
 import logger from '../utils/logger';
 import { News } from '../interfaces/news';
 import { NewsDetail } from '../interfaces/newsDetail';
+import { getCurrentIsoDate } from '../utils/helpers';
 
 const customAxios: AxiosInstance = axios.create({
   httpsAgent: new https.Agent({
@@ -50,7 +51,7 @@ class SchoolApi {
   }
 
   async getSchedule(token: string, tuNgay: string | null = null, denNgay: string | null = null): Promise<ScheduleResponse> {
-    const today = new Date();
+    const today = getCurrentIsoDate();
     const defaultDate: string = today.toISOString().split('T')[0] + 'T00:00:00.000';
 
     try {

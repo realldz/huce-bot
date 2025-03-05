@@ -1,7 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
-import { formatSchedule } from '../../utils/helpers';
+import { formatSchedule, getCurrentIsoDate } from '../../utils/helpers';
 import { User } from '../../interfaces/user';
 
 export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void> {
@@ -15,7 +15,7 @@ export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0] + 'T00:00:00.000';
+    const today = getCurrentIsoDate().toISOString().split('T')[0] + 'T00:00:00.000';
 
     for (const user of users) {
       try {

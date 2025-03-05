@@ -79,6 +79,10 @@ export function parseNewsFromHtml(html: string): { id: string; date: string; tit
   return newsItems;
 }
 
+export function getCurrentIsoDate(): Date {
+  return new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
+}
+
 export function formatNotices(notices: Notice[]): string {
   return notices
     .map((notice) => `📢 ${notice.title}\n${notice.content}`)

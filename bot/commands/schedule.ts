@@ -1,5 +1,5 @@
 import { BotContext } from '../bot';
-import { formatSchedule } from '../../utils/helpers';
+import { formatSchedule, getCurrentIsoDate } from '../../utils/helpers';
 import logger from '../../utils/logger';
 import { ScheduleResponse } from '../../interfaces/schedule';
 
@@ -53,7 +53,7 @@ export default {
 
     // Hàm lấy ngày đầu và cuối tuần hiện tại
     const getWeekRange = (): { tuNgay: string; denNgay: string } => {
-      const today = new Date();
+      const today = getCurrentIsoDate();
       const firstDay = new Date(today.setDate(today.getDate() - today.getDay())); // Chủ nhật
       const lastDay = new Date(today.setDate(firstDay.getDate() + 6)); // Thứ bảy
 
@@ -66,8 +66,8 @@ export default {
     try {
       if (args.length === 0) {
         // /schedule: Lấy lịch hôm nay
-        const today: string = new Date().toISOString().split('T')[0];
-        timeRangeMessage = `<b>Ngày:</b> ${today.split('-')[2]}/${today.split('-')[1]}`;
+        const today: string = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        timeRangeMessage = `<b>Lịch học hôm nay: (${today.split('-')[2]}/${today.split('-')[1]})</b>`;
       } else if (args.length === 1 && args[0].toLowerCase() === 'week') {
         // /schedule week: Lấy lịch tuần này
         const { tuNgay: weekStart, denNgay: weekEnd } = getWeekRange();
