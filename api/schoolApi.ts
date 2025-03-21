@@ -24,7 +24,7 @@ const customAxios: AxiosInstance = axios.create({
 class SchoolApi {
   async login(studentId: string, password: string): Promise<AuthResult> {
     const params = new URLSearchParams();
-    params.append('url_uni', config.SCHOOL_API_BASEURL+'/AppSVGV');
+    params.append('url_uni', config.SCHOOL_API_BASEURL + '/AppSVGV');
     params.append('username', `${studentId}2${config.SCHOOL_CODE}`);
     params.append('password', password);
     params.append('client_secret', config.CLIENT_SECRET);
@@ -151,7 +151,7 @@ class SchoolApi {
   async getNews(token: string, categoryId?: number): Promise<string> {
     try {
       const response = await customAxios.post(
-        `${config.SCHOOL_API_BASEURL}/SinhVienTinTuc/GetTinForWeb_PageLogin`, 
+        `${config.SCHOOL_API_BASEURL}/SinhVienTinTuc/GetTinForWeb_PageLogin`,
         `ViewName=ViewLogin_TinTucSinhVien&PageSize=5${categoryId ? `&&IDDanhMuc=${categoryId}` : ''}`,
       );
       return response.data;
@@ -178,20 +178,50 @@ class SchoolApi {
       throw new Error('Không thể lấy chi tiết tin tức!');
     }
   }
-
-  async getNotices(token: string): Promise<Notice[]> {
+//TODO
+  async getNotices(token: string): Promise<any[]> {
     try {
-      const response: AxiosResponse<Notice[]> = await customAxios.get(
-        `${config.SCHOOL_API_BASEURL}/AppSVGV/notices`,
+      const response = await customAxios.post(
+        `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/Notify/NhacNhoSinhVienPopup`,
+        {}, // Body rỗng vì không cần tham số
         {
-          headers: { Authorization: `${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
         }
       );
-      return response.data;
+
+      const data = response.data;
+      if (!data.isOk || !Array.isArray(data.result)) {
+        throw new Error(data.errorMessages?.join(', ') || 'Lỗi khi lấy danh sách nhắc nhở');
+      }
+
+      return data.result; // Trả về mảng nhắc nhở
     } catch (error) {
-      const err = error as Error & AxiosError;
-      logger.error('Error fetching notices:', 'response' in err && err.response ? err.response.data : err.message);
-      throw new Error('Không thể lấy thông báo!');
+      throw new Error(`Lỗi khi gọi API nhắc nhở: ${(error as Error).message}`);
+    }
+  }
+
+//TODO
+  async updateNoticeStatus(token: string, id: number): Promise<boolean> {
+    try {
+      const response = await customAxios.post(
+        `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/Notify/UpdateXemNhacNho`,
+        {
+          idGhiChu: id
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+
+      return response.data.result.isOk;
+    } catch (error) {
+      throw new Error(`Lỗi khi gọi API NoticeStatus: ${(error as Error).message}`);
     }
   }
 }
