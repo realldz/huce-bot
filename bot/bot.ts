@@ -10,16 +10,15 @@ import gradesCmd from './commands/grades';
 import logoutCmd from './commands/logout';
 import helpCmd from './commands/help';
 import newsCmd from './commands/news';
+import checkinCmd from './commands/checkin';
 import logger from '../utils/logger';
 
-// Định nghĩa interface cho context với state tùy chỉnh
 export interface BotContext extends Context {
   state: {
     user?: any;
   };
 }
 
-// Khởi tạo bot với type BotContext
 const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN);
 
 // Middleware để log cả message và callback query
@@ -35,6 +34,11 @@ bot.use(async (ctx: BotContext, next) => {
 
   if (ctx.message && 'text' in ctx.message) {
     action = ctx.message.text;
+    if (ctx.message.reply_to_message) {
+      action = `Reply: ${action} to ${ctx.message.reply_to_message.message_id || 'N/A'}`;
+    } else if (ctx.message.entities) {
+      action = `Command: ${action}`;
+    }
   } else if (ctx.callbackQuery) {
     if ('data' in ctx.callbackQuery) {
       action = `Callback: ${ctx.callbackQuery.data}`;
@@ -45,7 +49,6 @@ bot.use(async (ctx: BotContext, next) => {
   await next();
 });
 
-// Áp dụng requireAuth cho tất cả bot.action
 bot.use((ctx: BotContext, next) => {
   if (ctx.callbackQuery) {
     return requireAuth(ctx, next);
@@ -53,7 +56,6 @@ bot.use((ctx: BotContext, next) => {
   return next();
 });
 
-// Đăng ký lệnh với type handler
 bot.start(startCmd.handler);
 bot.command('login', loginCmd.handler);
 bot.command('schedule', requireAuth, scheduleCmd.handler);
@@ -63,24 +65,28 @@ bot.command('grades', requireAuth, gradesCmd.handler(bot));
 bot.command('news', requireAuth, newsCmd.handler(bot));
 bot.command('logout', logoutCmd.handler);
 bot.command('help', helpCmd.handler);
+bot.command('checkin', requireAuth, checkinCmd.handler(bot));
+// Đăng ký xử lý tin nhắn sau cùng để không chặn lệnh
+bot.on('message', requireAuth, checkinCmd.handleReply);
 
-// Xử lý khi người dùng nhập sai lệnh
-bot.on('message', async (ctx: BotContext) => {
+// Xử lý lệnh không hợp lệ, nhưng bỏ qua tin nhắn reply
+bot.use(async (ctx: BotContext, next) => {
   if (!ctx.from || !ctx.message) {
     logger.error('Không có thông tin người gửi hoặc message trong context');
     return;
   }
 
-  if (!('text' in ctx.message)) {
-    logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) gửi message không phải text`);
+  if (ctx.message.reply_to_message) {
+    return next(); // Bỏ qua nếu tin nhắn là phản hồi
+  }
+
+  if ('text' in ctx.message && ctx.message.text.startsWith('/')) {
+    logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) nhập sai lệnh: ${ctx.message.text}`);
+    await ctx.reply('Lệnh không hợp lệ! Dùng /help để xem danh sách lệnh.');
     return;
   }
 
-  const text: string = ctx.message.text;
-  if (text.startsWith('/')) {
-    logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) nhập sai lệnh: ${text}`);
-    await ctx.reply('Lệnh không hợp lệ! Dùng /help để xem danh sách lệnh.');
-  }
+  await next();
 });
 
 export default bot;

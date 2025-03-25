@@ -14,6 +14,7 @@ import logger from '../utils/logger';
 import { News } from '../interfaces/news';
 import { NewsDetail } from '../interfaces/newsDetail';
 import { getCurrentIsoDate } from '../utils/helpers';
+import {CheckinRequest, CheckinResponse, ListCheckinResponse} from "../interfaces/checkin";
 
 const customAxios: AxiosInstance = axios.create({
   httpsAgent: new https.Agent({
@@ -178,6 +179,43 @@ class SchoolApi {
       throw new Error('Không thể lấy chi tiết tin tức!');
     }
   }
+
+  async getListCheckin(token: string): Promise<ListCheckinResponse> {
+    try {
+      const response = await customAxios.post(
+        `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/LichDiemDanh`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const err = error as Error & AxiosError;
+      logger.error('Error fetching list checkin:', 'response' in err && err.response ? err.response.data : err.message);
+      throw new Error('Không thể lấy danh sách điểm danh!');
+    }
+  }
+
+  async checkin(token: string, request: CheckinRequest): Promise<CheckinResponse> {
+    console.log('Request:', request);
+    try {
+      const response = await customAxios.post(
+        `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/SubmitDiemDanh`,
+        { request },
+        {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          validateStatus: (status) => status < 500 // Resolve only if the status code is less than 500
+        }
+      );
+      return response.data;
+    } catch (error) {
+      const err = error as Error & AxiosError;
+      logger.error('Error fetching checkin: ', 'response' in err && err.response ? err.response.data : err.message);
+      throw new Error(`Có lỗi khi cố gắng điểm danh`);
+    }
+  }
+
 //TODO
   async getNotices(token: string): Promise<any[]> {
     try {
