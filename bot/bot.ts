@@ -17,6 +17,7 @@ import {commandsList} from "./commandsList";
 export interface BotContext extends Context {
   state: {
     user?: any;
+    studentId?: string;
   };
 }
 
@@ -50,7 +51,9 @@ bot.use(async (ctx: BotContext, next) => {
   await next();
 });
 
+// Middleware to require authentication for callback queries
 bot.use((ctx: BotContext, next) => {
+  logger.debug('Register RequireAuth middleware được gọi');
   if (ctx.callbackQuery) {
     return requireAuth(ctx, next);
   }
@@ -83,9 +86,11 @@ bot.on('message', requireAuth, checkinCmd.handleReply);
 
 // Xử lý lệnh không hợp lệ, nhưng bỏ qua tin nhắn reply
 bot.use(async (ctx: BotContext, next) => {
+  // logger.debug(ctx.from, ctx.message);
   if (!ctx.from || !ctx.message) {
     logger.error('Không có thông tin người gửi hoặc message trong context');
-    return;
+    return next();
+    // return;
   }
 
   if (ctx.message.reply_to_message) {

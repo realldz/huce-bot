@@ -19,5 +19,6 @@ export const requireAuth = async (ctx: BotContext, next: NextFn): Promise<void> 
   }
 
   ctx.state.user = user; // Lưu user vào state
+  ctx.state.studentId = user.studentId; // Lưu studentId vào state
   return next();
 };
