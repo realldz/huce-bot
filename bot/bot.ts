@@ -12,6 +12,7 @@ import helpCmd from './commands/help';
 import newsCmd from './commands/news';
 import checkinCmd from './commands/checkin';
 import logger from '../utils/logger';
+import {commandsList} from "./commandsList";
 
 export interface BotContext extends Context {
   state: {
@@ -55,6 +56,17 @@ bot.use((ctx: BotContext, next) => {
   }
   return next();
 });
+
+// Đăng ký danh sách lệnh chính vào menu Telegram
+bot.telegram.setMyCommands(
+    commandsList
+    .filter(cmd => !cmd.command.includes(' ')) // Chỉ lấy lệnh không có tham số
+    .map(cmd => ({
+      command: cmd.command,
+      description: cmd.description
+    }))
+);
+
 
 bot.start(startCmd.handler);
 bot.command('login', loginCmd.handler);
