@@ -86,11 +86,13 @@ bot.on('message', requireAuth, checkinCmd.handleReply);
 
 // Xử lý lệnh không hợp lệ, nhưng bỏ qua tin nhắn reply
 bot.use(async (ctx: BotContext, next) => {
-  // logger.debug(ctx.from, ctx.message);
+  if (ctx.callbackQuery) {
+    return next(); // Bỏ qua nếu là callback query
+  }
+
   if (!ctx.from || !ctx.message) {
     logger.error('Không có thông tin người gửi hoặc message trong context');
-    return next();
-    // return;
+    return;
   }
 
   if (ctx.message.reply_to_message) {
