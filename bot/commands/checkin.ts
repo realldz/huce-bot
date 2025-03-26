@@ -10,7 +10,7 @@ const pendingCheckins = new Map<number, { messageId: number; idLichHoc: string; 
 const handleCheckin = async (ctx: BotContext, idLichHoc: string, location: string) => {
     const sentMessage = await ctx.reply(
         `Điểm danh cho lịch học ${idLichHoc}.\nBot sẽ tự viết hoa lại code\nTrả lời tin nhắn này với mã điểm danh:`,
-        { parse_mode: 'markdown', reply_markup: { force_reply: true  } }
+        { parse_mode: 'Markdown', reply_markup: { force_reply: true  } }
     );
     await ctx.answerCbQuery();
     pendingCheckins.set(ctx.from.id, { messageId: sentMessage.message_id, idLichHoc, location });
@@ -18,15 +18,16 @@ const handleCheckin = async (ctx: BotContext, idLichHoc: string, location: strin
 
 const handleReply = async (ctx: BotContext) => {
     // Bỏ qua nếu tin nhắn là lệnh
-    if (!ctx.message?.text || ctx.message.text.startsWith('/')) return;
+    if (!(ctx.message as { text: string }).text || (ctx.message as { text: string }).text.startsWith('/')) return;
 
     const userId = ctx.from.id;
     const checkinData = pendingCheckins.get(userId);
     if (!checkinData) return;
 
-    if (ctx.message.reply_to_message?.message_id !== checkinData.messageId) return;
+    // @ts-ignore
+    if (ctx.message.reply_to_message.message_id !== checkinData.messageId) return;
 
-    const maDiemDanh = ctx.message.text;
+    const maDiemDanh = (ctx.message as { text: string }).text;
     pendingCheckins.delete(userId);
     const ip = (Math.floor(Math.random() * 255) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
     const lat = checkinData.location.split(';')[0];
@@ -34,13 +35,14 @@ const handleReply = async (ctx: BotContext) => {
     const viTri = (await locationApi.reverseGeocode(lat, long)).display_name;
     const response: CheckinResponse = await schoolApi.checkin(ctx.state.user.token, {
         idLichHoc: checkinData.idLichHoc,
+        deviceOSID: 'UP1A.231005.007',
         code: maDiemDanh.toString().toUpperCase(),
         ipAddress: ip, //fakeip
         isCanhBao: false,
-        location: checkinData.location.replace(';',','),
+        location: checkinData.location.replace(';',',').replace(' ',''),
         viTri,
     });
-    await ctx.reply(response.isOk ? 'Điểm danh thành công!' : `Điểm danh thất bại! ${response.errorMessages?.[0]?.errorMessage || ''}`);
+    await ctx.reply(response.isOk ? 'Điểm danh thành công!' : `Điểm danh thất bại! ${response.errorMessages?.[0]?.errorMessage || 'Unknown error'}`);
 };
 
 export default {

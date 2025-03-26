@@ -198,6 +198,7 @@ class SchoolApi {
   }
 
   async checkin(token: string, request: CheckinRequest): Promise<CheckinResponse> {
+    logger.debug('checkin request:', request);
     try {
       const response = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/SubmitDiemDanh`,
@@ -207,6 +208,7 @@ class SchoolApi {
           validateStatus: (status) => status < 500 // Resolve only if the status code is less than 500
         }
       );
+      logger.debug('checkin response:', response.data);
       return response.data;
     } catch (error) {
       const err = error as Error & AxiosError;
