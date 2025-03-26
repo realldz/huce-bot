@@ -198,7 +198,6 @@ class SchoolApi {
   }
 
   async checkin(token: string, request: CheckinRequest): Promise<CheckinResponse> {
-    console.log('Request:', request);
     try {
       const response = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/SubmitDiemDanh`,
