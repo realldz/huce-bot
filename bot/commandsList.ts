@@ -8,6 +8,7 @@ export const commandsList = [
     { command: 'schedule week', description: 'Lấy lịch học tuần này' },
     { command: 'info', description: 'Xem thông tin cá nhân sinh viên' },
     { command: 'grades', description: 'Xem kết quả học tập' },
+    { command: 'news', description: 'Xem tin tức từ nhà trường' },
     { command: 'checkin', description: 'Điểm danh cho lịch học' },
 
 ];
