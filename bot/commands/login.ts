@@ -2,6 +2,8 @@ import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { User } from '../../interfaces/user';
 import { AuthResult } from '../../interfaces/auth';
+import schoolApi from "../../api/schoolApi";
+import userModel from "../../database/userModel";
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
@@ -25,8 +27,6 @@ export default {
     }
 
     const [studentId, password]: [string, string] = args as [string, string];
-    const schoolApi = (await import('../../api/schoolApi.js')).default; // Sẽ đổi thành .ts sau
-    const userModel = (await import('../../database/userModel.js')).default; // Sẽ đổi thành .ts sau
 
     try {
       // Kiểm tra xem người dùng đã đăng nhập chưa

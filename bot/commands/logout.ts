@@ -1,10 +1,10 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { User } from '../../interfaces/user'
+import userModel from "../../database/userModel";
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
-    const userModel = (await import('../../database/userModel.js')).default; // Sẽ đổi thành .ts sau
 
     try {
       // Kiểm tra xem ctx.from có tồn tại không
