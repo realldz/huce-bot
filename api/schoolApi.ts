@@ -97,11 +97,11 @@ class SchoolApi {
     }
   }
 
-  async getGrades(token: string, idSinhVien: number): Promise<GradesResponse> {
+  async getGrades(token: string): Promise<GradesResponse> {
     try {
       const response: AxiosResponse<GradesResponse> = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/KetQuaHocTap`,
-        { idSinhVien },
+        { },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,11 +117,11 @@ class SchoolApi {
     }
   }
 
-  async getGradeDetail(token: string, idSinhVien: number, idLopHocPhan: string): Promise<GradeDetailResponse> {
+  async getGradeDetail(token: string, idLopHocPhan: string): Promise<GradeDetailResponse> {
     try {
       const response: AxiosResponse<GradeDetailResponse> = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/KetQuaHocTapChiTiet`,
-        { idSinhVien, idLopHocPhan },
+        { idLopHocPhan },
         { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
       );
       return response.data;
