@@ -6,6 +6,7 @@ interface Config {
   DB_PATH: string;
   CLIENT_SECRET: string;
   SCHOOL_CODE: string;
+  LOG_LEVEL?: string;
 }
 
 const config: Config = {
@@ -14,6 +15,7 @@ const config: Config = {
   DB_PATH: process.env.DB_PATH || './database/users.db',
   CLIENT_SECRET: process.env.CLIENT_SECRET || '',
   SCHOOL_CODE: process.env.SCHOOL_CODE || '',
+  LOG_LEVEL: process.env.LOG_LEVEL || 'info',
 };
 
 export default config;
