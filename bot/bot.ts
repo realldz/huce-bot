@@ -95,7 +95,7 @@ bot.use(async (ctx: BotContext, next) => {
     return;
   }
 
-  if (ctx.message.reply_to_message) {
+  if (ctx.message && 'reply_to_message' in ctx.message) {
     return next(); // Bỏ qua nếu tin nhắn là phản hồi
   }
 
