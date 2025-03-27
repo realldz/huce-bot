@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 import config from '../config/config';
+import { Notice } from '../interfaces/notices';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API
 interface ScheduleItem {
@@ -14,12 +15,6 @@ interface ScheduleItem {
 
 interface ScheduleData {
   result: ScheduleItem[];
-}
-
-// Định nghĩa interface cho thông báo
-interface Notice {
-  title: string;
-  content: string;
 }
 
 export function formatSchedule(scheduleData: ScheduleData): string {
@@ -84,7 +79,14 @@ export function getCurrentIsoDate(): Date {
 }
 
 export function formatNotices(notices: Notice[]): string {
+  if (!notices || notices.length === 0) {
+    return "Không có nhắc nhở nào!";
+  }
+  
   return notices
-    .map((notice) => `📢 ${notice.title}\n${notice.content}`)
+    .map((notice) => 
+      `<b>${notice.tieuDe}</b>\n${notice.moTa}\n` +
+      `<i>Ngày tạo: ${new Date(notice.ngayTao).toLocaleDateString('vi-VN')}</i>`
+    )
     .join("\n\n");
 }

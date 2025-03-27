@@ -7,7 +7,7 @@ import { ScheduleResponse } from '../interfaces/schedule';
 import { StudentInfoResponse } from '../interfaces/studentInfo';
 import { GradesResponse } from '../interfaces/grades';
 import { GradeDetailResponse } from '../interfaces/gradeDetail';
-import { Notice } from '../interfaces/notices';
+import { Notice, NoticeResponse } from '../interfaces/notices';
 import { AxiosError } from '../interfaces/common';
 import { NewsCategory } from '../interfaces/newsCategory';
 import logger from '../utils/logger';
@@ -217,10 +217,10 @@ class SchoolApi {
     }
   }
 
-//TODO
-  async getNotices(token: string): Promise<any[]> {
+  async getNotices(token: string): Promise<NoticeResponse> {
+    logger.debug('Fetching notices');
     try {
-      const response = await customAxios.post(
+      const response = await customAxios.post<NoticeResponse>(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/Notify/NhacNhoSinhVienPopup`,
         {}, // Body rỗng vì không cần tham số
         {
@@ -235,20 +235,21 @@ class SchoolApi {
       if (!data.isOk || !Array.isArray(data.result)) {
         throw new Error(data.errorMessages?.join(', ') || 'Lỗi khi lấy danh sách nhắc nhở');
       }
-
-      return data.result; // Trả về mảng nhắc nhở
+      logger.debug('Notices:', data);
+      return data; // Trả về mảng nhắc nhở
     } catch (error) {
       throw new Error(`Lỗi khi gọi API nhắc nhở: ${(error as Error).message}`);
     }
   }
 
-//TODO
-  async updateNoticeStatus(token: string, id: number): Promise<boolean> {
+  async updateNoticeStatus(token: string, idSinhVien: number, idGhiChu: number): Promise<boolean> {
+    logger.debug('Updating notice status: ', idSinhVien, idGhiChu);
     try {
       const response = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/Notify/UpdateXemNhacNho`,
         {
-          idGhiChu: id
+          idSinhVien,
+          idGhiChu
         },
         {
           headers: {
@@ -257,7 +258,7 @@ class SchoolApi {
           }
         }
       );
-
+      logger.debug('Update notice status response:', response.data);
       return response.data.result.isOk;
     } catch (error) {
       throw new Error(`Lỗi khi gọi API NoticeStatus: ${(error as Error).message}`);
