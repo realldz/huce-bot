@@ -2,10 +2,10 @@ import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { Telegraf } from 'telegraf';
 import { parseNewsFromHtml } from '../../utils/helpers';
+import schoolApi from '../../api/schoolApi';
 
 // Hàm xử lý lệnh /news
 const newsHandler = async (ctx: BotContext): Promise<void> => {
-  const schoolApi = (await import('../../api/schoolApi')).default;
   try {
     const newsCategories = await schoolApi.getNewsCategories(ctx.state.user!.token);
     if (newsCategories.length === 0) {
@@ -32,7 +32,6 @@ const newsActionHandler = async (ctx: any): Promise<void> => {
   }
 
   const categoryId = categoryIdMatch;
-  const schoolApi = (await import('../../api/schoolApi')).default;
 
   try {
     logger.info(`Gọi API getNews với categoryId: ${categoryId}`);
@@ -68,7 +67,6 @@ const newsDetailActionHandler = async (ctx: any): Promise<void> => {
   }
   try {
     const newsId = newsIdMatch;
-    const schoolApi = (await import('../../api/schoolApi')).default;
     logger.info(`Gọi API getNewsDetail với newsId: ${newsId}`);
     const newsDetail = await schoolApi.getNewsDetail(ctx.state.user!.token, Number(newsId));
     const text: string = `<b>${newsDetail.tieuDe}</b>\nNgày ${newsDetail.ngayDangTin}\n<i>Bot chưa hỗ trợ hiển thị nội dung tin tức, vui lòng xem trên trình duyệt!</i>`;
