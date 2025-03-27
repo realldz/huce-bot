@@ -1,21 +1,13 @@
 import { load } from 'cheerio';
 import config from '../config/config';
 import { Notice } from '../interfaces/notices';
+import { ScheduleData, ScheduleItem } from '../interfaces/schedule';
+import { CheckinItem } from '../interfaces/checkin';
+import logger from './logger';
+import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
+import { PeriodRange, PeriodRange2 } from '../enums/period';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API
-interface ScheduleItem {
-  ngay: string;
-  tietHocThi: string;
-  tenMonHoc: string;
-  tenPhong: string;
-  loaiLich: number;
-  isTamNgung: boolean;
-  chiTiets: { label: string; value: string }[];
-}
-
-interface ScheduleData {
-  result: ScheduleItem[];
-}
 
 export function formatSchedule(scheduleData: ScheduleData): string {
   const { result } = scheduleData;
@@ -33,6 +25,7 @@ export function formatSchedule(scheduleData: ScheduleData): string {
       const formattedDate = `${dayOfWeek}, ${day}/${month}`;
 
       const tietHoc = item.tietHocThi;
+      const gio = PeriodRange2[item.tietHocThi];
       const tenMonHoc = item.tenMonHoc;
       const phongHoc = item.tenPhong;
       const loaiLich = item.loaiLich === 1 ? "Lịch học" : "Lịch thi";
@@ -45,6 +38,7 @@ export function formatSchedule(scheduleData: ScheduleData): string {
       return (
         `<b>Ngày:</b> ${formattedDate}\n` +
         `<b>Tiết:</b> ${tietHoc}\n` +
+        `<b>Giờ:</b> ${gio}\n` +
         `<b>Môn học:</b> ${tenMonHoc}\n` +
         `<b>Phòng:</b> ${phongHoc}\n` +
         `<b>Loại:</b> ${loaiLich}${tamNgung}\n` +
@@ -89,4 +83,29 @@ export function formatNotices(notices: Notice[]): string {
       `<i>Ngày tạo: ${new Date(notice.ngayTao).toLocaleDateString('vi-VN')}</i>`
     )
     .join("\n\n");
+}
+
+export function formatListCheckin(checkins: CheckinItem[]): [string, InlineKeyboardButton[][]] {
+  if (!checkins || checkins.length === 0) {
+    return ["Không có lịch học để điểm danh!", []];
+  }
+
+  let text = '';
+  let buttons = [];
+
+  checkins.map((checkin) => {
+    const ngayHoc = new Date(checkin.ngayHoc).toLocaleDateString('vi-VN');
+    text += `<b>[${checkin.idLichHoc}] ${checkin.tenMonHoc}</b> (${ngayHoc})\n`;
+    checkin.chiTiets.forEach((chiTiet) => {
+      text += `<b>${chiTiet.label}:</b> ${chiTiet.value}\n`;
+      if (chiTiet.label === 'Tiết') {
+        const time = PeriodRange[chiTiet.value];
+        text += `<b>Giờ:</b> ${time}\n`;
+      }
+    });
+    text += `\n`;
+    buttons.push([{ text: `Điểm danh ${checkin.tenMonHoc}`, callback_data: `checkin_${checkin.idLichHoc}_${checkin.locationTruong}` }]);
+  });
+
+  return [text, buttons];
 }
