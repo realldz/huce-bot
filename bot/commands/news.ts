@@ -25,7 +25,7 @@ const newsHandler = async (ctx: BotContext): Promise<void> => {
 // Hàm xử lý callback từ nút tin tức
 const newsActionHandler = async (ctx: any): Promise<void> => {
   const [categoryIdMatch, categoryNameMatch] = [ctx.match[1], ctx.match[2]];
-  logger.info(`Đã nhận callback với categoryId: ${categoryIdMatch}, categoryName: ${categoryNameMatch}`);
+  logger.debug(`Đã nhận callback với categoryId: ${categoryIdMatch}, categoryName: ${categoryNameMatch}`);
   if (!categoryIdMatch) {
     await ctx.reply('Không tìm thấy danh mục tin tức!');
     return;
@@ -34,7 +34,7 @@ const newsActionHandler = async (ctx: any): Promise<void> => {
   const categoryId = categoryIdMatch;
 
   try {
-    logger.info(`Gọi API getNews với categoryId: ${categoryId}`);
+    logger.debug(`Gọi API getNews với categoryId: ${categoryId}`);
     const html = await schoolApi.getNews(ctx.state.user!.token, Number(categoryId)); // HTML từ crawl
     const newsItems = parseNewsFromHtml(html);
 
@@ -60,14 +60,14 @@ const newsActionHandler = async (ctx: any): Promise<void> => {
 // Hàm xử lý callback chi tiết tin tức
 const newsDetailActionHandler = async (ctx: any): Promise<void> => {
   const newsIdMatch = ctx.match && ctx.match[1];
-  logger.info(`Đã nhận callback với newsId: ${newsIdMatch}`);
+  logger.debug(`Đã nhận callback với newsId: ${newsIdMatch}`);
   if (!newsIdMatch) {
     await ctx.reply('Không tìm thấy tin tức!');
     return;
   }
   try {
     const newsId = newsIdMatch;
-    logger.info(`Gọi API getNewsDetail với newsId: ${newsId}`);
+    logger.debug(`Gọi API getNewsDetail với newsId: ${newsId}`);
     const newsDetail = await schoolApi.getNewsDetail(ctx.state.user!.token, Number(newsId));
     const text: string = `<b>${newsDetail.tieuDe}</b>\nNgày ${newsDetail.ngayDangTin}\n<i>Bot chưa hỗ trợ hiển thị nội dung tin tức, vui lòng xem trên trình duyệt!</i>`;
     await ctx.reply(text, { parse_mode: 'HTML' });
