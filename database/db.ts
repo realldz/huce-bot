@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import config from '../config/config.js'; // Giữ nguyên như Bạn yêu cầu
+import config from '../config/config';
 
 // Định nghĩa type cho sqlite3.Database
 const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
