@@ -34,7 +34,7 @@ const handleReply = async (ctx: BotContext) => {
     const long = checkinData.location.split(';')[1];
     const viTri = (await locationApi.reverseGeocode(lat, long)).display_name;
     const response: CheckinResponse = await schoolApi.checkin(ctx.state.user.token, {
-        idLichHoc: checkinData.idLichHoc,
+        idLichHoc: Number(checkinData.idLichHoc),
         deviceOSID: 'UP1A.231005.007',
         code: maDiemDanh.toString().toUpperCase(),
         ipAddress: ip, //fakeip

@@ -22,9 +22,9 @@ export interface CheckinResponse {
 }
 
 export interface CheckinRequest {
-    idSinhVien?: string,
+    idSinhVien?: number,
     deviceOSID: string,
-    idLichHoc: string;
+    idLichHoc: number,
     code: string;
     location: string;
     ipAddress: string;
