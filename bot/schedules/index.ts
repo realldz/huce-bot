@@ -4,6 +4,7 @@ import { scheduleJob } from 'node-schedule';
 import logger from '../../utils/logger';
 import { dailyScheduleTask } from './dailySchedule';
 import { dailyNewsTask } from './dailyNews';
+import { regularNoticeTask } from './regularNotice';
 
 
 // Interface cho scheduled task
@@ -38,6 +39,11 @@ const tasks: ScheduledTask[] = [
     name: 'Daily News Notification',
     cron: '0 0 12,17 * * *',
     execute: dailyNewsTask,
+  },
+  {
+    name: 'Regular Notice Notification',
+    cron: '0 0 6,12,18,22 * * *',
+    execute: regularNoticeTask,
   },
   // Thêm task khác ở đây trong tương lai
 ];
