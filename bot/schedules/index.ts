@@ -9,20 +9,34 @@ import { dailyNewsTask } from './dailyNews';
 // Interface cho scheduled task
 interface ScheduledTask {
   name: string;
-  cron: string; // Cron schedule (VD: '0 0 6 * * *')
+  cron: string;
   execute: (bot: Telegraf<BotContext>) => Promise<void>;
 }
+
+/*
+Cron format:
+*    *    *    *    *    *
+┬    ┬    ┬    ┬    ┬    ┬
+│    │    │    │    │    │
+│    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+│    │    │    │    └───── month (1 - 12)
+│    │    │    └────────── day of month (1 - 31)
+│    │    └─────────────── hour (0 - 23)
+│    └──────────────────── minute (0 - 59)
+└───────────────────────── second (0 - 59, OPTIONAL)
+
+*/
 
 // Danh sách các task
 const tasks: ScheduledTask[] = [
   {
     name: 'Daily Schedule Notification',
-    cron: '0 0 6 * * *', // 6:00 sáng mỗi ngày
+    cron: '0 0 6 * * *',
     execute: dailyScheduleTask,
   },
   {
     name: 'Daily News Notification',
-    cron: '0 0 12,17 * * *', // 7:00 sáng
+    cron: '0 0 12,17 * * *',
     execute: dailyNewsTask,
   },
   // Thêm task khác ở đây trong tương lai
