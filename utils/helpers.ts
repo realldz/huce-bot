@@ -28,7 +28,13 @@ export function formatSchedule(scheduleData: ScheduleData): string {
       const gio = PeriodRange2[item.tietHocThi];
       const tenMonHoc = item.tenMonHoc;
       const phongHoc = item.tenPhong;
-      const loaiLich = item.loaiLich === 1 ? "Lịch học" : "Lịch thi";
+      const loaiLich = item.loaiLich === 1
+        ? "Lịch học"
+        : item.loaiLich === 2
+          ? "Lịch thi"
+          : item.loaiLich === 3
+            ? "Lịch học online"
+            : "Không xác định";
       const tamNgung = item.isTamNgung ? " [Nghỉ]" : "";
       const giangVienObj = item.chiTiets.find(
         (detail) => detail.label === "Giảng viên"
@@ -76,9 +82,9 @@ export function formatNotices(notices: Notice[]): string {
   if (!notices || notices.length === 0) {
     return "Không có nhắc nhở nào!";
   }
-  
+
   return notices
-    .map((notice) => 
+    .map((notice) =>
       `<b>${notice.tieuDe}</b>\n${notice.moTa}\n` +
       `<i>Ngày tạo: ${new Date(notice.ngayTao).toLocaleDateString('vi-VN')}</i>`
     )
