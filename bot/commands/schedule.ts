@@ -80,7 +80,43 @@ const parseArguments = (args: string[]): { tuNgay: string | null; denNgay: strin
 const fetchAndReplySchedule = async (ctx: BotContext, tuNgay: string | null, denNgay: string | null, timeRangeMessage: string): Promise<void> => {
   const schedule: ScheduleResponse = await schoolApi.getSchedule(ctx.state.user.token, tuNgay, denNgay);
   const formatted: string = formatSchedule(schedule);
-  ctx.reply(`${timeRangeMessage}\n\n${formatted}`, { parse_mode: 'HTML' });
+
+  const MAX_MESSAGE_LENGTH = 4000; // Giới hạn an toàn dưới 4096 ký tự
+  let fullMessage = `${timeRangeMessage}\n\n${formatted}`;
+
+  // Nếu tin nhắn ngắn hơn giới hạn, gửi luôn
+  if (fullMessage.length <= MAX_MESSAGE_LENGTH) {
+    await ctx.reply(fullMessage, { parse_mode: 'HTML' });
+    return;
+  }
+  fullMessage += '\n\n<i><b>Tin nhắn đã được chia nhỏ do quá dài</b></i>'; // Thêm thông báo vào cuối tin nhắn
+
+  // Tách tin nhắn thành nhiều phần
+  const messages: string[] = [];
+  let currentMessage = '';
+  const lines = fullMessage.split('\n'); // Tách thành từng dòng
+
+  for (const line of lines) {
+    // Nếu thêm dòng mới vượt quá giới hạn
+    if ((currentMessage + line + '\n').length > MAX_MESSAGE_LENGTH) {
+      if (currentMessage) {
+        messages.push(currentMessage.trim()); // Thêm tin nhắn hiện tại vào danh sách
+      }
+      currentMessage = line; // Bắt đầu tin nhắn mới với dòng hiện tại
+    } else {
+      currentMessage += line + '\n'; // Thêm dòng vào tin nhắn hiện tại
+    }
+  }
+
+  // Đừng quên thêm phần còn lại nếu có
+  if (currentMessage.trim()) {
+    messages.push(currentMessage.trim());
+  }
+
+  // Gửi từng tin nhắn
+  for (const msg of messages) {
+    await ctx.reply(msg, { parse_mode: 'HTML' });
+  }
 };
 
 export default {
