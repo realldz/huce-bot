@@ -5,12 +5,27 @@ import { Telegraf } from "telegraf";
 import locationApi from "../../api/locationApi";
 import logger from "../../utils/logger";
 
+let cachedIpAddress: string | null = null;
+let lastFetchedTime: number | null = null;
+
+const getIpAddress = async (): Promise<string> => {
+    const now = Date.now();
+    if (cachedIpAddress && lastFetchedTime && (now - lastFetchedTime < 30 * 60 * 1000)) {
+        return cachedIpAddress;
+    }
+
+    const response = await fetch('https://api.ipify.org/?format=json');
+    const data = await response.json();
+    cachedIpAddress = data.ip;
+    lastFetchedTime = now;
+    return cachedIpAddress;
+};
 const pendingCheckins = new Map<number, { messageId: number; idLichHoc: string; location: string }>();
 
 const handleCheckin = async (ctx: BotContext, idLichHoc: string, location: string) => {
     const sentMessage = await ctx.reply(
-        `Điểm danh cho lịch học ${idLichHoc}.\nBot sẽ tự viết hoa lại code\nTrả lời tin nhắn này với mã điểm danh:`,
-        { parse_mode: 'Markdown', reply_markup: { force_reply: true  } }
+        `Điểm danh cho lịch học ${idLichHoc}.\nTrả lời tin nhắn này với mã điểm danh:`,
+        { parse_mode: 'Markdown', reply_markup: { force_reply: true } }
     );
     await ctx.answerCbQuery();
     pendingCheckins.set(ctx.from.id, { messageId: sentMessage.message_id, idLichHoc, location });
@@ -29,17 +44,18 @@ const handleReply = async (ctx: BotContext) => {
 
     const maDiemDanh = (ctx.message as { text: string }).text;
     pendingCheckins.delete(userId);
-    const ip = (Math.floor(Math.random() * 255) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
+    const ip = (Math.floor(Math.random() * 255) + 1) + "." + (Math.floor(Math.random() * 255)) + "." + (Math.floor(Math.random() * 255)) + "." + (Math.floor(Math.random() * 255));
     const lat = checkinData.location.split(';')[0];
     const long = checkinData.location.split(';')[1];
     const viTri = (await locationApi.reverseGeocode(lat, long)).display_name;
     const response: CheckinResponse = await schoolApi.checkin(ctx.state.user.token, {
+        idSinhVien: 1719729,
         idLichHoc: Number(checkinData.idLichHoc),
         deviceOSID: 'UP1A.231005.007',
-        code: maDiemDanh.toString().toUpperCase(),
-        ipAddress: ip, //fakeip
+        code: maDiemDanh,
+        ipAddress: await getIpAddress(), //fakeip
         isCanhBao: false,
-        location: checkinData.location.replace(';',',').replace(' ',''),
+        location: checkinData.location.replace(';', ',').replace(' ', ''),
         viTri,
     });
     await ctx.reply(response.isOk ? 'Điểm danh thành công!' : `Điểm danh thất bại! ${response.errorMessages?.[0]?.errorMessage || 'Unknown error'}`);
