@@ -1,3 +1,9 @@
+import { SchoolApiResponse } from "./common";
+
+export interface NewsResponse extends SchoolApiResponse<News[]> { }
+export interface NewsCategoryResponse extends SchoolApiResponse<NewsCategory[]> { }
+export interface NewsDetailResponse extends SchoolApiResponse<NewsDetail> { }
+
 export interface News {
   id: number;
   tieuDe: string;

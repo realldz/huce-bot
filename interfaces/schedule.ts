@@ -1,17 +1,26 @@
-export interface ScheduleResponse {
-  result: ScheduleItem[];
-}
+import { SchoolApiResponse } from "./common";
 
+export interface ScheduleResponse extends SchoolApiResponse<ScheduleItem[]> { }
+
+export interface ScheduleItemDetail {
+  label: string;
+  value: string;
+}
 export interface ScheduleItem {
-  ngay: string;
-  tietHocThi: string;
-  tenMonHoc: string;
-  tenPhong: string;
   loaiLich: number;
+  id: number;
+  idLopHocPhan: number;
+  ngay: string;
+  tenMonHoc: string;
+  tietHocThi: string;
+  tenPhong: string;
+  isLichHoc: boolean;
   isTamNgung: boolean;
-  chiTiets: { label: string; value: string }[];
+  isElearning: boolean;
+  linkOnline: string | null;
+  linkOnline1: string | null;
+  linkOnline2: string | null;
+  chiTiets: ScheduleItemDetail[];
+  metaData: any;
 }
 
-export interface ScheduleData {
-  result: ScheduleItem[];
-}

@@ -1,8 +1,18 @@
-export interface StudentInfoResponse {
-    result: {
-      idSinhVien: number;
-      hoTen: string;
-      hinhAnh: string | null;
-      chiTiets: { label: string; value: string }[];
-    };
-  }
+import { SchoolApiResponse } from "./common";
+
+export interface StudentInfoResponse extends SchoolApiResponse<StudentInfo> { }
+
+export interface StudentInfo {
+  idSinhVien: number;
+  maSinhVien: string;
+  hoTen: string;
+  hinhAnh: string;
+  chiTiets: StudentInfoDetail[];
+}
+
+export interface StudentInfoDetail {
+  label: string;
+  value: string;
+  isBold: boolean;
+  colorValue: string | null;
+}

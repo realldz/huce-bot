@@ -1,8 +1,7 @@
-export interface ListCheckinResponse {
-    result: CheckinItem[] | null;
-    errorMessages: [],
-    isOk: boolean;
-}
+import { SchoolApiResponse } from "./common";
+
+export interface ListCheckinResponse extends SchoolApiResponse<CheckinItem[]> { }
+export interface CheckinResponse extends SchoolApiResponse<CheckinItem> { }
 
 export interface CheckinItem {
     id: number;

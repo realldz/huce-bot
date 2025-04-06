@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import config from '../config/config';
 import { Notice } from '../interfaces/notices';
-import { ScheduleData, ScheduleItem } from '../interfaces/schedule';
+import { ScheduleItem, ScheduleResponse } from '../interfaces/schedule';
 import { CheckinItem } from '../interfaces/checkin';
 import logger from './logger';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
@@ -9,8 +9,8 @@ import { PeriodRange, PeriodRange2 } from '../enums/period';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API
 
-export function formatSchedule(scheduleData: ScheduleData): string {
-  const { result } = scheduleData;
+export function formatSchedule(scheduleResponse: ScheduleResponse): string {
+  const { result } = scheduleResponse;
   if (!result || result.length === 0) {
     return "Không có lịch học/thi trong khoảng thời gian này.";
   }
