@@ -144,7 +144,8 @@ class SchoolApi {
     return this.postRequest<string>(
       `${config.SCHOOL_API_BASEURL}/SinhVienTinTuc/GetTinForWeb_PageLogin`,
       `ViewName=ViewLogin_TinTucSinhVien&PageSize=5${categoryId ? `&&IDDanhMuc=${categoryId}` : ''}`,
-      token
+      token,
+      'application/x-www-form-urlencoded'
     );
   }
 
