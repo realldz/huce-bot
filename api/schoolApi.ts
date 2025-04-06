@@ -51,7 +51,10 @@ class SchoolApi {
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     return apiCall<T>(
-      () => customAxios.post<T>(url, data, { headers }),
+      () => customAxios.post<T>(url, data, {
+        headers,
+        validateStatus: (status) => status < 500
+      }),
       url,
       data,
       headers
