@@ -5,16 +5,13 @@ import config from '../config/config';
 import { AuthResult, LoginResponse } from '../interfaces/auth';
 import { ScheduleResponse } from '../interfaces/schedule';
 import { StudentInfoResponse } from '../interfaces/studentInfo';
-import { GradesResponse } from '../interfaces/grades';
-import { GradeDetailResponse } from '../interfaces/gradeDetail';
+import { GradeDetailResponse, GradesResponse } from '../interfaces/grades';
 import { Notice, NoticeResponse } from '../interfaces/notices';
 import { AxiosError } from '../interfaces/common';
-import { NewsCategory } from '../interfaces/newsCategory';
 import logger from '../utils/logger';
-import { News } from '../interfaces/news';
-import { NewsDetail } from '../interfaces/newsDetail';
+import { News, NewsCategory, NewsDetail } from '../interfaces/news';
 import { getCurrentIsoDate } from '../utils/helpers';
-import {CheckinRequest, CheckinResponse, ListCheckinResponse} from "../interfaces/checkin";
+import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "../interfaces/checkin";
 
 const customAxios: AxiosInstance = axios.create({
   httpsAgent: new https.Agent({
@@ -101,7 +98,7 @@ class SchoolApi {
     try {
       const response: AxiosResponse<GradesResponse> = await customAxios.post(
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/KetQuaHocTap`,
-        { },
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -186,7 +183,7 @@ class SchoolApi {
         `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/SinhVien/LichDiemDanh`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         }
       );
       return response.data;
