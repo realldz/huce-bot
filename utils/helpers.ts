@@ -101,7 +101,7 @@ export function formatListCheckin(checkins: CheckinItem[]): [string, InlineKeybo
 
   checkins.map((checkin) => {
     const ngayHoc = new Date(checkin.ngayHoc).toLocaleDateString('vi-VN');
-    text += `<b>[${checkin.idLichHoc}] ${checkin.tenMonHoc}</b> (${ngayHoc})\n`;
+    text += `<b>[${checkin.idLichHoc}] ${checkin.isDaDiemDanh ? '[Đã điểm danh]' : ''}${checkin.tenMonHoc}</b> (${ngayHoc})\n`;
     checkin.chiTiets.forEach((chiTiet) => {
       text += `<b>${chiTiet.label}:</b> ${chiTiet.value}\n`;
       if (chiTiet.label === 'Tiết') {

@@ -4,6 +4,7 @@ import { CheckinResponse, ListCheckinResponse } from "../../interfaces/checkin";
 import { Telegraf } from "telegraf";
 import locationApi from "../../api/locationApi";
 import logger from "../../utils/logger";
+import { formatListCheckin } from "../../utils/helpers";
 
 let cachedIpAddress: string | null = null;
 let lastFetchedTime: number | null = null;
@@ -67,16 +68,12 @@ export default {
             const responses: ListCheckinResponse = await schoolApi.getListCheckin(ctx.state.user.token);
             if (responses.result?.length) {
                 let message = 'Danh sách điểm danh:\n';
-                const buttons = responses.result.map((checkinItem) => {
-                    const ngayHoc = new Date(checkinItem.ngayHoc).toLocaleDateString('vi-VN');
-                    message += `<b>[${checkinItem.idLichHoc}] ${checkinItem.tenMonHoc}</b> (${ngayHoc})\n`;
-                    checkinItem.chiTiets.forEach((chiTiet) => {
-                        message += `<b>${chiTiet.label}:</b> ${chiTiet.value}\n`;
-                    });
-                    message += `\n`;
-                    return [{ text: `Điểm danh ${checkinItem.tenMonHoc}`, callback_data: `checkin_${checkinItem.idLichHoc}_${checkinItem.locationTruong}` }];
+                const [formatedSchedule, buttons] = formatListCheckin(responses.result);
+                message += formatedSchedule;
+                await ctx.reply(message, {
+                    parse_mode: 'HTML',
+                    reply_markup: { inline_keyboard: buttons },
                 });
-                await ctx.reply(message, { parse_mode: 'HTML', reply_markup: { inline_keyboard: buttons } });
             } else {
                 await ctx.reply('Không có lịch học để điểm danh');
             }
