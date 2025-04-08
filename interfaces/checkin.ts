@@ -15,11 +15,6 @@ export interface CheckinItem {
     metaData: any;
 }
 
-export interface CheckinResponse {
-    errorMessages?: { errorCode: string; errorMessage: string; errorValues: string[] }[];
-    isOk: boolean;
-}
-
 export interface CheckinRequest {
     idSinhVien?: number,
     deviceOSID: string,
