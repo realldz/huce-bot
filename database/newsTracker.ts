@@ -25,6 +25,18 @@ class NewsTracker {
       );
     });
   }
+
+  async getTop10SentNews(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      db.all(
+        'SELECT newsId FROM sent_news LIMIT 10',
+        (err: Error | null, rows: { newsId: string }[]) => {
+          if (err) reject(err);
+          else resolve(rows.map((row) => row.newsId));
+        }
+      );
+    });
+  }
 }
 
 export default new NewsTracker();

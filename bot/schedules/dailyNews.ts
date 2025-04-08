@@ -2,11 +2,11 @@ import { Telegraf } from 'telegraf';
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { parseNewsFromHtml } from '../../utils/helpers';
-import newsTracker from '../../database/newsTracker.js';
+import newsTracker from '../../database/newsTracker';
+import userModel from '../../database/userModel';
+import schoolApi from '../../api/schoolApi';
 
 export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
-  const userModel = (await import('../../database/userModel.js')).default;
-  const schoolApi = (await import('../../api/schoolApi.js')).default;
 
   try {
     const users = await userModel.getAllUsers();
@@ -24,7 +24,7 @@ export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
       return;
     }
 
-    const sentNews = await newsTracker.getSentNews();
+    const sentNews = await newsTracker.getTop10SentNews();
     const newItems = newsItems.filter((item) => !sentNews.includes(item.id));
 
     if (newItems.length === 0) {

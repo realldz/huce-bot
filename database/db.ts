@@ -15,7 +15,7 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       telegramId TEXT PRIMARY KEY,
-      studentId TEXT UNIQUE,
+      studentId TEXT,
       token TEXT,
       idSinhVien INTEGER
     )
