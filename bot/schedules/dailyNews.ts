@@ -24,7 +24,7 @@ export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
       return;
     }
 
-    const sentNews = await newsTracker.getTop10SentNews();
+    const sentNews = await newsTracker.getSentNews();
     const newItems = newsItems.filter((item) => !sentNews.includes(item.id));
 
     if (newItems.length === 0) {
