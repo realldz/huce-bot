@@ -46,17 +46,19 @@ const handleReply = async (ctx: BotContext) => {
     const maDiemDanh = (ctx.message as { text: string }).text;
     pendingCheckins.delete(userId);
     const ip = (Math.floor(Math.random() * 255) + 1) + "." + (Math.floor(Math.random() * 255)) + "." + (Math.floor(Math.random() * 255)) + "." + (Math.floor(Math.random() * 255));
-    const lat = checkinData.location.split(';')[0];
-    const long = checkinData.location.split(';')[1];
-    const viTri = (await locationApi.reverseGeocode(lat, long)).display_name;
+    const lat = parseFloat(checkinData.location.split(";")[0]);
+    const long = parseFloat(checkinData.location.split(";")[1]);
+    const roundedLat = String(Number(lat.toFixed(7)));
+    const roundedLong = String(Number(long.toFixed(7)));
+    const viTri = (await locationApi.reverseGeocode(roundedLat, roundedLong)).display_name;
     const response: CheckinResponse = await schoolApi.checkin(ctx.state.user.token, {
-        idSinhVien: 1719729,
         idLichHoc: Number(checkinData.idLichHoc),
-        deviceOSID: 'UP1A.231005.007',
+        idSinhVien: 1719729,
         code: maDiemDanh,
+        deviceOSID: 'UP1A.231005.007',
+        location: `${roundedLat},${roundedLong}`,
         ipAddress: await getIpAddress(), //fakeip
         isCanhBao: false,
-        location: checkinData.location.replace(';', ',').replace(' ', ''),
         viTri,
     });
     await ctx.reply(response.isOk ? 'Điểm danh thành công!' : `Điểm danh thất bại! ${response.errorMessages?.[0]?.errorMessage || 'Unknown error'}`);
