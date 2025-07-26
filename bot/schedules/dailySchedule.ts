@@ -21,14 +21,16 @@ export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void
         // const schedule = await schoolApi.getSchedule(user.token, today, today);
         // const formattedSchedule = formatSchedule(schedule);
         const schedule = (await schoolApi.getListCheckin(user.token)).result;
+
+        if (schedule.length === 0) {
+          logger.info(`Không có lịch học cho user ${user.telegramId}`);
+          continue;
+        }
+
         const [formattedSchedule, buttons] = formatListCheckin(schedule);
         logger.debug(`Lịch học hôm nay cho user ${user.telegramId}: ${formattedSchedule}`);
         logger.debug(`Buttons: ${JSON.stringify(buttons)}`);
 
-        if (formattedSchedule[1].length === 0) {
-          logger.info(`Không có lịch học cho user ${user.telegramId}`);
-          continue;
-        }
 
         const message = `<b>Lịch học hôm nay (${today.split('T')[0].split('-')[2]
           }/${today.split('T')[0].split('-')[1]}):</b>\n\n${formattedSchedule}`;
