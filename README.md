@@ -14,7 +14,7 @@ This project is a Telegram bot designed to assist students with managing their a
 
 ## Prerequisites
 
-- Node.js (v16 or higher)
+- Bun
 - SQLite3
 - Telegram Bot Token (from [BotFather](https://core.telegram.org/bots#botfather))
 - Environment variables configured in a `.env` file (see `.env.example` for reference)
@@ -31,7 +31,7 @@ This project is a Telegram bot designed to assist students with managing their a
 2. Install dependencies:
 
    ```bash
-   npm install
+   bun install
    ```
 
 3. Configure the environment variables:
@@ -52,21 +52,16 @@ This project is a Telegram bot designed to assist students with managing their a
 Start the bot in development mode with hot-reloading:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ### Production
 
-1. Build the project:
+1. Start the bot:
 
-   ```bash
-   npm run build
-   ```
-
-2. Start the bot:
-   ```bash
-   npm start
-   ```
+```bash
+bun run start
+```
 
 ## Commands
 
