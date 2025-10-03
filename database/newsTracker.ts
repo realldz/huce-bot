@@ -1,42 +1,19 @@
-import db from './db';
+import { dbRun, dbAll } from './db';
 
-class NewsTracker {
+const newsTracker = {
   async saveSentNews(newsId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.run(
-        'INSERT OR IGNORE INTO sent_news (newsId) VALUES (?)',
-        [newsId],
-        (err: Error | null) => {
-          if (err) reject(err);
-          else resolve();
-        }
-      );
-    });
-  }
+    await dbRun('INSERT OR IGNORE INTO sent_news (newsId) VALUES (?)', [newsId]);
+  },
 
   async getSentNews(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      db.all(
-        'SELECT newsId FROM sent_news',
-        (err: Error | null, rows: { newsId: string }[]) => {
-          if (err) reject(err);
-          else resolve(rows.map((row) => row.newsId));
-        }
-      );
-    });
-  }
+    const rows = await dbAll('SELECT newsId FROM sent_news') as { newsId: string }[];
+    return rows.map((row) => row.newsId);
+  },
 
   async getTop10SentNews(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      db.all(
-        'SELECT newsId FROM sent_news LIMIT 10',
-        (err: Error | null, rows: { newsId: string }[]) => {
-          if (err) reject(err);
-          else resolve(rows.map((row) => row.newsId));
-        }
-      );
-    });
+    const rows = await dbAll('SELECT newsId FROM sent_news ORDER BY rowid DESC LIMIT 10') as { newsId: string }[];
+    return rows.map((row) => row.newsId);
   }
-}
+};
 
-export default new NewsTracker();
+export default newsTracker;

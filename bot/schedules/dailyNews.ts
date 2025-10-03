@@ -6,7 +6,6 @@ import userModel from '../../database/userModel';
 import schoolApi from '../../api/schoolApi';
 
 export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
-
   try {
     const users = await userModel.getAllUsers();
     if (!users || users.length === 0) {
@@ -14,9 +13,7 @@ export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
       return;
     }
 
-    // Crawl tin tức từ tất cả danh mục (không truyền categoryId)
-    const html = await schoolApi.getNews(users[0].token); // API mới không cần ID
-    const newsItems = parseNewsFromHtml(html);
+    const newsItems = await schoolApi.getNews(users[0].token);
 
     if (newsItems.length === 0) {
       logger.info('Không có tin tức nào từ crawl');

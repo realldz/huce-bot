@@ -1,7 +1,7 @@
 import { Notice } from '../interfaces/notices';
 import { ScheduleItem, ScheduleResponse } from '../interfaces/schedule';
 import { CheckinItem } from '../interfaces/checkin';
-import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
+import { InlineKeyboardButton } from '@telegraf/types';
 import { PeriodRange, PeriodRange2 } from '../enums/period';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API

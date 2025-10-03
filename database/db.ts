@@ -1,8 +1,8 @@
 import sqlite3 from 'sqlite3';
+import { promisify } from 'util';
 import config from '../config/config';
 
-// Định nghĩa type cho sqlite3.Database
-const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
+const db = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
   if (err) {
     console.error('Error connecting to SQLite:', err);
   } else {
@@ -10,7 +10,12 @@ const db: sqlite3.Database = new sqlite3.Database(config.DB_PATH, (err: Error | 
   }
 });
 
-// Tạo bảng users và sent_news
+// Promisify db methods
+export const dbRun = promisify(db.run.bind(db));
+export const dbGet = promisify(db.get.bind(db));
+export const dbAll = promisify(db.all.bind(db));
+
+// Create tables
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
