@@ -1,6 +1,7 @@
 import { Telegraf, Context } from 'telegraf';
 import config from '../config/config';
 import { requireAuth } from './middleware/auth';
+import { requireMessage } from './middleware/messageContext';
 import startCmd from './commands/start';
 import loginCmd from './commands/login';
 import scheduleCmd from './commands/schedule';
@@ -70,19 +71,18 @@ bot.telegram.setMyCommands(
     }))
 );
 
-
-bot.start(startCmd.handler);
-bot.command('login', loginCmd.handler);
-bot.command('schedule', requireAuth, scheduleCmd.handler);
-bot.command('notices', requireAuth, noticesCmd.handler);
-bot.command('info', requireAuth, infoCmd.handler);
+bot.start(requireMessage, startCmd.handler);
+bot.command('login', requireMessage, loginCmd.handler);
+bot.command('schedule', requireAuth, requireMessage, scheduleCmd.handler);
+bot.command('notices', requireAuth, requireMessage, noticesCmd.handler);
+bot.command('info', requireAuth, requireMessage, infoCmd.handler);
 bot.command('grades', requireAuth, gradesCmd.handler(bot));
 bot.command('news', requireAuth, newsCmd.handler(bot));
-bot.command('logout', logoutCmd.handler);
-bot.command('help', helpCmd.handler);
+bot.command('logout', requireMessage, logoutCmd.handler);
+bot.command('help', requireMessage, helpCmd.handler);
 bot.command('checkin', requireAuth, checkinCmd.handler(bot));
 // Đăng ký xử lý tin nhắn sau cùng để không chặn lệnh
-bot.on('message', requireAuth, checkinCmd.handleReply);
+bot.on('message', requireAuth, requireMessage, checkinCmd.handleReply);
 
 // Xử lý lệnh không hợp lệ, nhưng bỏ qua tin nhắn reply
 bot.use(async (ctx: BotContext, next) => {
