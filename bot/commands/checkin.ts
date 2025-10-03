@@ -2,9 +2,8 @@ import schoolApi from "../../api/schoolApi";
 import { BotContext } from "../bot";
 import { CheckinResponse, ListCheckinResponse } from "../../interfaces/checkin";
 import { Telegraf } from "telegraf";
-import locationApi from "../../api/locationApi";
-import logger from "../../utils/logger";
 import { formatListCheckin } from "../../utils/helpers";
+import reverseGeocode from "../../api/locationApi";
 
 let cachedIpAddress: string | null = null;
 let lastFetchedTime: number | null = null;
@@ -50,7 +49,7 @@ const handleReply = async (ctx: BotContext) => {
     const long = parseFloat(checkinData.location.split(";")[1]);
     const roundedLat = String(Number(lat.toFixed(7)));
     const roundedLong = String(Number(long.toFixed(7)));
-    const viTri = (await locationApi.reverseGeocode(roundedLat, roundedLong)).display_name;
+    const viTri = (await reverseGeocode(roundedLat, roundedLong)).display_name;
     const response: CheckinResponse = await schoolApi.checkin(ctx.state.user.token, {
         idLichHoc: Number(checkinData.idLichHoc),
         idSinhVien: 1719729,
