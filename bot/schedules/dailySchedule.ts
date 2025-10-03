@@ -22,7 +22,7 @@ export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void
         // const formattedSchedule = formatSchedule(schedule);
         const schedule = (await schoolApi.getListCheckin(user.token)).result;
 
-        if (schedule.length === 0) {
+        if (!schedule || schedule.length === 0) {
           logger.info(`Không có lịch học cho user ${user.telegramId}`);
           continue;
         }
