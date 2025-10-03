@@ -1,7 +1,6 @@
 import { BotContext } from '../bot';
 import logger from '../../utils/logger';
 import { Telegraf } from 'telegraf';
-import { parseNewsFromHtml } from '../../utils/helpers';
 import schoolApi from '../../api/schoolApi';
 
 // Hàm xử lý lệnh /news
@@ -35,8 +34,7 @@ const newsActionHandler = async (ctx: any): Promise<void> => {
 
   try {
     logger.debug(`Gọi API getNews với categoryId: ${categoryId}`);
-    const html = await schoolApi.getNews(ctx.state.user!.token, Number(categoryId)); // HTML từ crawl
-    const newsItems = parseNewsFromHtml(html);
+    const newsItems = await schoolApi.getNews(ctx.state.user!.token, Number(categoryId));
 
     if (newsItems.length === 0) {
       await ctx.reply(`Không có tin tức nào trong danh mục <b>${categoryNameMatch}</b>!`, { parse_mode: 'HTML' });

@@ -36,3 +36,10 @@ export interface NewsDetail {
   lienQuans: string[];
   fileAttachs: string[];
 }
+
+export interface NewsItem {
+  id: string;
+  date: string;
+  title: string;
+  link: string;
+}
