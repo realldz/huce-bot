@@ -1,42 +1,15 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import qs from 'qs';
-import https from 'https';
 import config from '../config/config';
 import { AuthResult, LoginResponse } from '../interfaces/auth';
 import { ScheduleResponse } from '../interfaces/schedule';
 import { StudentInfoResponse } from '../interfaces/studentInfo';
 import { GradeDetailResponse, GradesResponse } from '../interfaces/grades';
-import { Notice, NoticeResponse } from '../interfaces/notices';
-import { AxiosError } from '../interfaces/common';
-import logger from '../utils/logger';
-import { News, NewsCategory, NewsCategoryResponse, NewsDetail, NewsDetailResponse, NewsItem } from '../interfaces/news';
+import { NoticeResponse } from '../interfaces/notices';
+import { NewsCategory, NewsCategoryResponse, NewsDetail, NewsDetailResponse, NewsItem } from '../interfaces/news';
 import { getCurrentIsoDate } from '../utils/helpers';
 import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "../interfaces/checkin";
 import { load } from 'cheerio';
+import customAxios from './customAxios';
 
-const customAxios: AxiosInstance = axios.create({
-  httpsAgent: new https.Agent({
-    rejectUnauthorized: false,
-  }),
-});
-
-customAxios.interceptors.request.use(config => {
-  const { url, data, headers } = config;
-  logger.debug('Sending request:', { url, data, headers });
-  return config;
-});
-
-customAxios.interceptors.response.use(
-  response => {
-    logger.debug('Received response:', { url: response.config.url, response: response.data });
-    return response;
-  },
-  error => {
-    const err = error as Error & AxiosError;
-    logger.error('API call failed:', 'response' in err && err.response ? err.response.data : err.message);
-    return Promise.reject(new Error('Có lỗi xảy ra khi gọi API!'));
-  }
-);
 
 const postRequest = async <T>(
   url: string,
@@ -154,7 +127,7 @@ const parseNewsHtml = (html: string): NewsItem[] => {
 const getNews = async (token: string, categoryId?: number): Promise<NewsItem[]> => {
   const html = await postRequest<string>(
     `${config.SCHOOL_API_BASEURL}/SinhVienTinTuc/GetTinForWeb_PageLogin`,
-    `ViewName=ViewLogin_TinTucSinhVien&PageSize=5${categoryId ? `&&IDDanhMuc=${categoryId}` : ''}`,
+    `ViewName=ViewLogin_TinTucSinhVien&PageSize=5${categoryId ? `&IDDanhMuc=${categoryId}` : ''}`,
     token,
     'application/x-www-form-urlencoded'
   );
