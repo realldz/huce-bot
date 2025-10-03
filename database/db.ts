@@ -13,8 +13,8 @@ const db = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
 
 // Promisify db methods
 export const dbRun = promisify(db.run.bind(db));
-export const dbGet = promisify(db.get.bind(db));
-export const dbAll = promisify(db.all.bind(db));
+export const dbGet = promisify(db.get.bind(db)) as <T>(sql: string, params: any) => Promise<T>;
+export const dbAll = promisify(db.all.bind(db)) as <T>(sql: string, params?: any) => Promise<T[]>;
 
 // Create tables
 db.serialize(() => {
@@ -29,6 +29,13 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS sent_news (
       newsId TEXT PRIMARY KEY
+    )
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS cache (
+      key TEXT PRIMARY KEY,
+      value TEXT,
+      expiresAt INTEGER
     )
   `);
 });

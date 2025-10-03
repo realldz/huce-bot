@@ -4,12 +4,7 @@ import logger from '../utils/logger';
 import { GradeDetailResponse, GradesResponse } from '../interfaces/grades';
 import schoolApi from "../api/schoolApi";
 import { BotContext } from "../bot/bot";
-
-interface CacheData {
-  grades: GradesResponse;
-}
-
-const gradesCache: Map<string, CacheData> = new Map();
+import cacheModel from '../database/cacheModel';
 
 export async function fetchGradesAndCache(ctx: BotContext) {
   const user = ctx.state.user;
@@ -25,9 +20,8 @@ export async function fetchGradesAndCache(ctx: BotContext) {
 
   if (ctx.chat) {
     const cacheKey = `${ctx.chat.id}_${ctx.state.studentId}_grades`;
-    gradesCache.set(cacheKey, { grades });
+    await cacheModel.set(cacheKey, { grades }, 600);
     logger.debug('Lưu dữ liệu vào cache:', cacheKey);
-    setTimeout(() => gradesCache.delete(cacheKey), 60 * 10 * 1000);
   }
 
   return grades;
@@ -57,7 +51,7 @@ export async function handleGradesAction(ctx: any) {
   const callbackData = ctx.match[1];
   logger.debug('handleGradesAction callbackData:', callbackData);
   const cacheKey = `${ctx.chat.id}_${ctx.state.user.studentId}_grades`;
-  const cachedData = gradesCache.get(cacheKey);
+  const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
   logger.debug('handleGradesAction cacheKey:', cacheKey);
 
   if (!cachedData) {
@@ -98,7 +92,7 @@ export async function handleGradeDetailAction(ctx: any) {
   const [idLopHocPhan, cacheKey] = [ctx.match[1], ctx.match[2]];
   logger.debug('handleGradeDetailAction idLopHocPhan:', idLopHocPhan);
   logger.debug('handleGradeDetailAction cacheKey:', cacheKey);
-  const cachedData = gradesCache.get(cacheKey);
+  const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
   if (!cachedData) {
     await ctx.reply('Dữ liệu đã hết hạn, thử gửi lại /grades!');
     return;
