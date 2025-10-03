@@ -19,8 +19,6 @@
     "axios": "^1.12.2",
     "cheerio": "^1.1.2",
     "dotenv": "^16.6.1",
-    "express": "^4.21.2",
-    "huce-bot": "file:",
     "node-schedule": "^2.1.1",
     "sqlite3": "^5.1.7",
     "winston": "^3.18.3"
