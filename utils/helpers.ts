@@ -1,9 +1,6 @@
-import { load } from 'cheerio';
-import config from '../config/config';
 import { Notice } from '../interfaces/notices';
 import { ScheduleItem, ScheduleResponse } from '../interfaces/schedule';
 import { CheckinItem } from '../interfaces/checkin';
-import logger from './logger';
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { PeriodRange, PeriodRange2 } from '../enums/period';
 
