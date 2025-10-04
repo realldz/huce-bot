@@ -13,7 +13,7 @@ import helpCmd from './commands/help';
 import newsCmd from './commands/news';
 import checkinCmd from './commands/checkin';
 import logger from '../utils/logger';
-import {commandsList} from "./commandsList";
+import { commandsList } from "./commandsList";
 
 export interface BotContext extends Context {
   state: {
@@ -22,14 +22,14 @@ export interface BotContext extends Context {
   };
 }
 
-const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN);
-
+const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN, { handlerTimeout: Infinity });
 // Middleware để log cả message và callback query
 bot.use(async (ctx: BotContext, next) => {
   if (!ctx.from) {
     logger.error('Không có thông tin người gửi trong context');
     return;
   }
+
 
   const userId: number = ctx.from.id;
   const username: string = ctx.from.username ? `@${ctx.from.username}` : 'N/A';
@@ -63,7 +63,7 @@ bot.use((ctx: BotContext, next) => {
 
 // Đăng ký danh sách lệnh chính vào menu Telegram
 bot.telegram.setMyCommands(
-    commandsList
+  commandsList
     .filter(cmd => !cmd.command.includes(' ')) // Chỉ lấy lệnh không có tham số
     .map(cmd => ({
       command: cmd.command,
