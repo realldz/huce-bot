@@ -7,6 +7,9 @@ interface Config {
   CLIENT_SECRET: string;
   SCHOOL_CODE: string;
   LOG_LEVEL?: string;
+  WEBHOOK_DOMAIN?: string;
+  WEBHOOK_PATH?: string;
+  PORT?: number;
 }
 
 const config: Config = {
@@ -16,6 +19,9 @@ const config: Config = {
   CLIENT_SECRET: process.env.CLIENT_SECRET || '',
   SCHOOL_CODE: process.env.SCHOOL_CODE || '',
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-};
+  WEBHOOK_DOMAIN: process.env.WEBHOOK_DOMAIN || '',
+  WEBHOOK_PATH: process.env.WEBHOOK_PATH || '',
+  PORT: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+}
 
 export default config;

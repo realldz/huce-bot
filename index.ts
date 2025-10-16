@@ -4,10 +4,30 @@ import { startScheduler } from './bot/schedules';
 
 // Khởi động bot
 async function startBot() {
-    logger.info('Bot đang khởi động...');
-    bot.launch();
-    startScheduler(bot); // Khởi động scheduler sau khi bot chạy
+    try {
+        logger.info('Bot đang khởi động...');
+
+        const useWebhook = process.env.WEBHOOK_DOMAIN !== '';
+
+        await bot.launch({
+            ...(useWebhook && {
+                webhook: {
+                    domain: process.env.WEBHOOK_DOMAIN!,   // bắt buộc khi bật webhook
+                    port: Number(process.env.PORT) || 3000,
+                    hookPath: process.env.WEBHOOK_PATH!,   // bắt buộc khi bật webhook
+                },
+            }),
+        });
+
+        logger.info('Bot đã khởi động thành công');
+
+        startScheduler(bot);
+    } catch (err) {
+        logger.error('Lỗi khi khởi động bot:', err);
+        process.exit(1);
+    }
 }
+
 
 // Dừng bot
 async function stopBot() {
