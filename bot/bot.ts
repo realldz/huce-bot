@@ -22,7 +22,7 @@ export interface BotContext extends Context {
   };
 }
 
-const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN, { handlerTimeout: Infinity });
+const bot = new Telegraf<BotContext>(config.TELEGRAM_TOKEN);
 // Middleware để log cả message và callback query
 bot.use(async (ctx: BotContext, next) => {
   if (!ctx.from) {

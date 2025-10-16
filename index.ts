@@ -14,7 +14,6 @@ async function startBot() {
                 webhook: {
                     domain: process.env.WEBHOOK_DOMAIN!,   // bắt buộc khi bật webhook
                     port: Number(process.env.PORT) || 3000,
-                    hookPath: process.env.WEBHOOK_PATH!,   // bắt buộc khi bật webhook
                 },
             }),
         });
