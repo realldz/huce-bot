@@ -1,8 +1,8 @@
-import { Notice } from '../interfaces/notices';
-import { ScheduleItem, ScheduleResponse } from '../interfaces/schedule';
-import { CheckinItem } from '../interfaces/checkin';
+import { Notice } from '@/interfaces/sinhvien/notices';
+import { ScheduleItem, ScheduleResponse } from '@/interfaces/sinhvien/schedule';
+import { CheckinItem } from '@/interfaces/sinhvien/checkin';
 import { InlineKeyboardButton } from '@telegraf/types';
-import { PeriodRange, PeriodRange2 } from '../enums/period';
+import { PeriodRange, PeriodRange2 } from '@/enums/period';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API
 

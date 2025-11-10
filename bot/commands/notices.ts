@@ -1,8 +1,8 @@
-import { BotContext } from '../bot';
-import { formatNotices } from '../../utils/helpers';
-import logger from '../../utils/logger';
-import schoolApi from '../../api/schoolApi';
-import { Notice } from '../../interfaces/notices';
+import { BotContext } from '@/interfaces/common';
+import { formatNotices } from '@/utils/helpers';
+import logger from '@/utils/logger';
+import schoolApi from '@/api/schoolApi';
+import { Notice } from '@/interfaces/sinhvien/notices';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

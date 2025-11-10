@@ -1,5 +1,5 @@
-import { BotContext } from '../bot';
-import logger from '../../utils/logger';
+import { BotContext } from '@/interfaces/common';
+import logger from '@/utils/logger';
 
 /**
  * Middleware to ensure that the update contains a message.

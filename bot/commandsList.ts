@@ -10,6 +10,7 @@ export const commandsList = [
     { command: 'grades', description: 'Xem kết quả học tập' },
     { command: 'news', description: 'Xem tin tức từ nhà trường' },
     { command: 'checkin', description: 'Điểm danh cho lịch học' },
+    { command: 'debt', description: 'Xem thông tin nợ học phí' },
     { command: 'notices', description: 'Xem nhắc nhở sinh viên' },
 
 ];

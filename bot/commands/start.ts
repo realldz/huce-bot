@@ -1,4 +1,4 @@
-import { BotContext } from '../bot';
+import { BotContext } from '@/interfaces/common';
 
 export default {
   handler: (ctx: BotContext) => {

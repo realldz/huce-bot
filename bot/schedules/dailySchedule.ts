@@ -1,10 +1,10 @@
 import { Telegraf } from 'telegraf';
-import { BotContext } from '../bot';
-import logger from '../../utils/logger';
-import { formatListCheckin, formatSchedule, getCurrentIsoDate } from '../../utils/helpers';
-import { User } from '../../interfaces/user';
-import userModel from '../../database/userModel';
-import schoolApi from '../../api/schoolApi';
+import { BotContext } from '@/interfaces/common';
+import logger from '@/utils/logger';
+import { formatListCheckin, formatSchedule, getCurrentIsoDate } from '@/utils/helpers';
+import { User } from '@/interfaces/user';
+import userModel from '@/database/userModel';
+import schoolApi from '@/api/schoolApi';
 
 export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void> {
   try {

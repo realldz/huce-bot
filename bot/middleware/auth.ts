@@ -1,7 +1,7 @@
-import { User } from '../../interfaces/user';
-import logger from '../../utils/logger';
-import { BotContext } from '../bot';
-import userModel from "../../database/userModel";
+import { User } from '@/interfaces/user';
+import logger from '@/utils/logger';
+import { BotContext } from '@/interfaces/common';
+import userModel from "@/database/userModel";
 // Định nghĩa type cho next function trong middleware của Telegraf
 type NextFn = () => Promise<void>;
 

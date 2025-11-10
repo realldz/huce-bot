@@ -1,4 +1,4 @@
-import { SchoolApiResponse } from "../common";
+import { SchoolApiResponse } from "@/common";
 
 export interface BankReponse extends SchoolApiResponse<BankResult[]> { }
 

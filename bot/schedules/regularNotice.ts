@@ -1,11 +1,11 @@
 import { Telegraf } from "telegraf";
-import { BotContext } from "../bot";
-import logger from "../../utils/logger";
-import { User } from "../../interfaces/user";
-import userModel from "../../database/userModel";
-import schoolApi from "../../api/schoolApi";
-import { formatNotices } from "../../utils/helpers";
-import { Notice } from "../../interfaces/notices";
+import logger from "@/utils/logger";
+import { User } from "@/interfaces/user";
+import userModel from "@/database/userModel";
+import schoolApi from "@/api/schoolApi";
+import { formatNotices } from "@/utils/helpers";
+import { Notice } from "@/interfaces/sinhvien/notices";
+import { BotContext } from "@/interfaces/common";
 
 export async function regularNoticeTask(bot: Telegraf<BotContext>): Promise<void> {
   try {

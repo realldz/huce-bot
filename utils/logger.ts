@@ -1,5 +1,5 @@
 import winston from 'winston';
-import config from "../config/config";
+import config from "@/config/config";
 
 // Format log tự động chuyển mọi kiểu dữ liệu về chuỗi
 const formatLogMessage = (...messages: any[]): string => {
@@ -14,10 +14,10 @@ const formatLogMessage = (...messages: any[]): string => {
 };
 
 const customFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf(({ timestamp, level, message }) => {
-      return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-    })
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.printf(({ timestamp, level, message }) => {
+    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+  })
 );
 
 const logger: winston.Logger = winston.createLogger({

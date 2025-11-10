@@ -1,7 +1,7 @@
 
-import { BotContext } from '../../bot/bot';
-import logger from '../../utils/logger';
-import { parseArguments, fetchAndReplySchedule } from '../../services/scheduleService';
+import { BotContext } from '@/interfaces/common';
+import logger from '@/utils/logger';
+import { parseArguments, fetchAndReplySchedule } from '@/services/scheduleService';
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {

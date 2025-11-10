@@ -1,3 +1,5 @@
+import { Context } from 'telegraf';
+
 export interface AxiosError {
   response?: {
     data?: any;
@@ -14,4 +16,11 @@ export interface errorMessages {
   errorCode: string;
   errorMessage: string;
   errorValues: string[];
+}
+
+export interface BotContext extends Context {
+  state: {
+    user?: any;
+    studentId?: string;
+  };
 }

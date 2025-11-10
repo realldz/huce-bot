@@ -1,9 +1,9 @@
 import { Telegraf } from 'telegraf';
-import { BotContext } from '../bot';
-import logger from '../../utils/logger';
-import newsTracker from '../../database/newsTracker';
-import userModel from '../../database/userModel';
-import schoolApi from '../../api/schoolApi';
+import logger from '@/utils/logger';
+import newsTracker from '@/database/newsTracker';
+import userModel from '@/database/userModel';
+import schoolApi from '@/api/schoolApi';
+import { BotContext } from '@/interfaces/common';
 
 export async function dailyNewsTask(bot: Telegraf<BotContext>): Promise<void> {
   try {

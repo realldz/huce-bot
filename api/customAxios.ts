@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
-import { AxiosError } from '../interfaces/common';
-import logger from '../utils/logger';
+import { AxiosError } from '@/interfaces/common';
+import logger from '@/utils/logger';
 import https from 'https';
 
 const customAxios: AxiosInstance = axios.create({

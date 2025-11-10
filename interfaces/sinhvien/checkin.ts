@@ -1,4 +1,4 @@
-import { SchoolApiResponse } from "../common";
+import { SchoolApiResponse } from "@/interfaces/common";
 
 export interface ListCheckinResponse extends SchoolApiResponse<CheckinItem[]> { }
 export interface CheckinResponse extends SchoolApiResponse<CheckinItem> { }

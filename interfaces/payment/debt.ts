@@ -1,6 +1,6 @@
 import { SchoolApiResponse } from "../common";
 
-export interface DebtResponse extends SchoolApiResponse<DebtResult[]> { }
+export interface DebtResponse extends SchoolApiResponse<DebtResult> { }
 
 export interface DebtResult {
     congNos: Debt[];

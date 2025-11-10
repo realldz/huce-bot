@@ -1,7 +1,7 @@
-import { BotContext } from '../bot';
-import logger from '../../utils/logger';
+import { BotContext } from '@/interfaces/common';
+import logger from '@/utils/logger';
 import { Telegraf } from 'telegraf';
-import schoolApi from '../../api/schoolApi';
+import schoolApi from '@/api/schoolApi';
 
 // Hàm xử lý lệnh /news
 const newsHandler = async (ctx: BotContext): Promise<void> => {

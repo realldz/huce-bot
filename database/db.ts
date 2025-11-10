@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
-import config from '../config/config';
-import logger from '../utils/logger';
+import config from '@/config/config';
+import logger from '@/utils/logger';
 
 const db = new sqlite3.Database(config.DB_PATH, (err: Error | null) => {
   if (err) {

@@ -1,11 +1,11 @@
 import { Telegraf } from 'telegraf';
-import config from '../config/config';
+import config from '@/config/config';
 import { requireAuth } from './middleware/auth';
 import { requireMessage } from './middleware/messageContext';
 import { loggingMiddleware } from './middleware/logging';
-import logger from '../utils/logger';
+import logger from '@/utils/logger';
 import { commandsList } from "./commandsList";
-import { BotContext } from '../interfaces/common';
+import { BotContext } from '@/interfaces/common';
 
 import startCmd from './commands/start';
 import loginCmd from './commands/login';

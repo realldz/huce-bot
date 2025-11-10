@@ -1,10 +1,9 @@
 
-import { Telegraf } from 'telegraf';
-import logger from '../utils/logger';
-import { GradeDetailResponse, GradesResponse } from '../interfaces/sinhvien/grades';
-import schoolApi from "../api/schoolApi";
-import { BotContext } from "../bot/bot";
-import cacheModel from '../database/cacheModel';
+import logger from '@/utils/logger';
+import { GradeDetailResponse, GradesResponse } from '@/interfaces/sinhvien/grades';
+import schoolApi from "@/api/schoolApi";
+import { BotContext } from '@/interfaces/common';
+import cacheModel from '@/database/cacheModel';
 
 export async function fetchGradesAndCache(ctx: BotContext) {
   const user = ctx.state.user;

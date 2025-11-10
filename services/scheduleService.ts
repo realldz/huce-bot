@@ -1,9 +1,8 @@
 
-import { BotContext } from '../bot/bot';
-import { formatSchedule, getCurrentIsoDate } from '../utils/helpers';
-import logger from '../utils/logger';
-import { ScheduleResponse } from '../interfaces/sinhvien/schedule';
-import schoolApi from '../api/schoolApi';
+import { BotContext } from '@/interfaces/common';
+import { formatSchedule, getCurrentIsoDate } from '@/utils/helpers';
+import { ScheduleResponse } from '@/interfaces/sinhvien/schedule';
+import schoolApi from '@/api/schoolApi';
 
 const formatDate = (dateStr: string): string => {
   const [day, month, year] = dateStr.split('/');

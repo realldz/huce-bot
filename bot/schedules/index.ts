@@ -1,7 +1,7 @@
 import { Telegraf } from 'telegraf';
-import { BotContext } from '../bot';
+import { BotContext } from '@/interfaces/common';
 import { scheduleJob } from 'node-schedule';
-import logger from '../../utils/logger';
+import logger from '@/utils/logger';
 import { dailyScheduleTask } from './dailySchedule';
 import { dailyNewsTask } from './dailyNews';
 import { regularNoticeTask } from './regularNotice';

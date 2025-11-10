@@ -1,6 +1,6 @@
 import schoolApi from "../../api/schoolApi";
-import { BotContext } from "../bot";
-import { CheckinResponse, ListCheckinResponse } from "../../interfaces/checkin";
+import { BotContext } from "../../interfaces/common";
+import { CheckinResponse, ListCheckinResponse } from "@/interfaces/sinhvien/checkin";
 import { Telegraf } from "telegraf";
 import { formatListCheckin } from "../../utils/helpers";
 import reverseGeocode from "../../api/locationApi";

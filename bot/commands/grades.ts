@@ -1,12 +1,12 @@
 import { Telegraf } from 'telegraf';
-import logger from '../../utils/logger';
+import logger from '@/utils/logger';
 import {
   fetchGradesAndCache,
   sendOverviewMessage,
   sendSemesterSummaryMessage,
   handleGradesAction,
   handleGradeDetailAction,
-} from '../../services/gradeService';
+} from '@/services/gradeService';
 
 function initGradesActions(bot: Telegraf<any>) {
   bot.action(/grades_(.+)/, async (ctx) => handleGradesAction(ctx));

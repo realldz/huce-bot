@@ -1,4 +1,4 @@
-import { User } from '../interfaces/user';
+import { User } from '@/interfaces/user';
 import { dbRun, dbGet, dbAll } from './db';
 
 const userModel = {

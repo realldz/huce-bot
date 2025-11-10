@@ -1,9 +1,9 @@
-import { BotContext } from '../bot';
-import logger from '../../utils/logger';
-import { User } from '../../interfaces/user';
-import { AuthResult } from '../../interfaces/auth';
-import schoolApi from "../../api/schoolApi";
-import userModel from "../../database/userModel";
+import { BotContext } from '@/interfaces/common';
+import logger from '@/utils/logger';
+import { User } from '@/interfaces/user';
+import { AuthResult } from '@/interfaces/auth';
+import schoolApi from "@/api/schoolApi";
+import userModel from "@/database/userModel";
 
 export default {
   handler: async (ctx: BotContext): Promise<void> => {
@@ -19,7 +19,7 @@ export default {
       ctx.reply('Vui lòng gửi lệnh dạng text, ví dụ: /login <mã_sinh_viên> <mật_khẩu>');
       return;
     }
-    
+
     const args: string[] = ctx.message.text.split(' ').slice(1);
     if (args.length !== 2) {
       ctx.reply('Sai cú pháp! Dùng: /login <mã_sinh_viên> <mật_khẩu>');

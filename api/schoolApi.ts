@@ -1,14 +1,15 @@
-import config from '../config/config';
-import { AuthResult, LoginResponse } from '../interfaces/auth';
-import { ScheduleResponse } from '../interfaces/schedule';
-import { StudentInfoResponse } from '../interfaces/studentInfo';
-import { GradeDetailResponse, GradesResponse } from '../interfaces/grades';
-import { NoticeResponse } from '../interfaces/notices';
-import { NewsCategory, NewsCategoryResponse, NewsDetail, NewsDetailResponse, NewsItem } from '../interfaces/news';
-import { getCurrentIsoDate } from '../utils/helpers';
-import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "../interfaces/checkin";
+import config from '@/config/config';
+import { AuthResult, LoginResponse } from '@/interfaces/auth';
+import { ScheduleResponse } from '@/interfaces/sinhvien/schedule';
+import { StudentInfoResponse } from '@/interfaces/sinhvien/studentInfo';
+import { GradeDetailResponse, GradesResponse } from '@/interfaces/sinhvien/grades';
+import { NoticeResponse } from '@/interfaces/sinhvien/notices';
+import { NewsCategory, NewsCategoryResponse, NewsDetail, NewsDetailResponse, NewsItem } from '@/interfaces/sinhvien/news';
+import { getCurrentIsoDate } from '@/utils/helpers';
+import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "@/interfaces/sinhvien/checkin";
 import { load } from 'cheerio';
 import customAxios from './customAxios';
+import { DebtResponse } from '@/interfaces/payment/debt';
 
 
 const postRequest = async <T>(
@@ -176,6 +177,14 @@ const updateNoticeStatus = async (token: string, idSinhVien: number, idGhiChu: n
   return response.result.isOk;
 };
 
+const getDebt = async (token: string): Promise<DebtResponse> => {
+  return postRequest<any>(
+    `${config.SCHOOL_API_BASEURL}/AppSVGV/api/v1/Payment/CongNo`,
+    {},
+    token
+  );
+};
+
 export default {
   login,
   getSchedule,
@@ -189,4 +198,5 @@ export default {
   checkin,
   getNotices,
   updateNoticeStatus,
+  getDebt,
 };
