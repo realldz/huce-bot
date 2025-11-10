@@ -7,8 +7,13 @@
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "types": ["bun-types", "node"]
+    "types": ["bun-types", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
+
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
