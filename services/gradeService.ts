@@ -1,7 +1,7 @@
 
 import { Telegraf } from 'telegraf';
 import logger from '../utils/logger';
-import { GradeDetailResponse, GradesResponse } from '../interfaces/grades';
+import { GradeDetailResponse, GradesResponse } from '../interfaces/sinhvien/grades';
 import schoolApi from "../api/schoolApi";
 import { BotContext } from "../bot/bot";
 import cacheModel from '../database/cacheModel';

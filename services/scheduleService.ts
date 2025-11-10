@@ -2,7 +2,7 @@
 import { BotContext } from '../bot/bot';
 import { formatSchedule, getCurrentIsoDate } from '../utils/helpers';
 import logger from '../utils/logger';
-import { ScheduleResponse } from '../interfaces/schedule';
+import { ScheduleResponse } from '../interfaces/sinhvien/schedule';
 import schoolApi from '../api/schoolApi';
 
 const formatDate = (dateStr: string): string => {
