@@ -1,9 +1,9 @@
-import schoolApi from "../../api/schoolApi";
-import { BotContext } from "../../interfaces/common";
+import schoolApi from "@/api/schoolApi";
+import { BotContext } from "@/interfaces/common";
 import { CheckinResponse, ListCheckinResponse } from "@/interfaces/sinhvien/checkin";
 import { Telegraf } from "telegraf";
-import { formatListCheckin } from "../../utils/helpers";
-import reverseGeocode from "../../api/locationApi";
+import { formatListCheckin } from "@/utils/helpers";
+import reverseGeocode from "@/api/locationApi";
 
 let cachedIpAddress: string | null = null;
 let lastFetchedTime: number | null = null;
