@@ -4,3 +4,4 @@ logs
 database/users.db
 dist
 .idea
+.vscode
