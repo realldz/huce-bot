@@ -12,6 +12,18 @@ export const requireAuth = async (ctx: BotContext, next: NextFn): Promise<void> 
     await ctx.reply('Có lỗi xử lý yêu cầu, thử lại sau!');
     return;
   }
+
+  if (ctx.message && 'text' in ctx.message) {
+    const message = ctx.message.text;
+    const command = message.split(' ')[0];
+    const publicCommands = ['/login', '/help']
+
+    // Nếu là lệnh công khai -> bỏ qua middleware
+    if (publicCommands.includes(command)) {
+      return next()
+    }
+  }
+
   const user: User | undefined = await userModel.getUser(ctx.from.id.toString());
   if (!user || !user.token) {
     await ctx.reply('Bạn chưa đăng nhập! Dùng /login trước.');

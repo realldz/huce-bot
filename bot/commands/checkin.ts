@@ -5,21 +5,21 @@ import { Telegraf } from "telegraf";
 import { formatListCheckin } from "@/utils/helpers";
 import reverseGeocode from "@/api/locationApi";
 
-let cachedIpAddress: string | null = null;
-let lastFetchedTime: number | null = null;
+// let cachedIpAddress: string | null = null;
+// let lastFetchedTime: number | null = null;
 
-const getIpAddress = async (): Promise<string> => {
-    const now = Date.now();
-    if (cachedIpAddress && lastFetchedTime && (now - lastFetchedTime < 30 * 60 * 1000)) {
-        return cachedIpAddress;
-    }
+// const getIpAddress = async (): Promise<string> => {
+//     const now = Date.now();
+//     if (cachedIpAddress && lastFetchedTime && (now - lastFetchedTime < 30 * 60 * 1000)) {
+//         return cachedIpAddress;
+//     }
 
-    const response = await fetch('https://api.ipify.org/?format=json');
-    const data = await response.json();
-    cachedIpAddress = data.ip;
-    lastFetchedTime = now;
-    return cachedIpAddress;
-};
+//     const response = await fetch('https://api.ipify.org/?format=json');
+//     const data = await response.json();
+//     cachedIpAddress = data.ip;
+//     lastFetchedTime = now;
+//     return cachedIpAddress;
+// };
 const pendingCheckins = new Map<number, { messageId: number; idLichHoc: string; location: string }>();
 
 const handleCheckin = async (ctx: BotContext, idLichHoc: string, location: string) => {
@@ -28,13 +28,14 @@ const handleCheckin = async (ctx: BotContext, idLichHoc: string, location: strin
         { parse_mode: 'Markdown', reply_markup: { force_reply: true } }
     );
     await ctx.answerCbQuery();
+    if (!ctx.from) return;
     pendingCheckins.set(ctx.from.id, { messageId: sentMessage.message_id, idLichHoc, location });
 };
 
-const handleReply = async (ctx: BotContext) => {
+export const handleReply = async (ctx: BotContext) => {
     // Bỏ qua nếu tin nhắn là lệnh
     if (!(ctx.message as { text: string }).text || (ctx.message as { text: string }).text.startsWith('/')) return;
-
+    if (!ctx.from) return;
     const userId = ctx.from.id;
     const checkinData = pendingCheckins.get(userId);
     if (!checkinData) return;
@@ -56,35 +57,31 @@ const handleReply = async (ctx: BotContext) => {
         code: maDiemDanh,
         deviceOSID: 'UP1A.231005.007',
         location: `${roundedLat},${roundedLong}`,
-        ipAddress: await getIpAddress(), //fakeip
+        ipAddress: ip, //fakeip
         isCanhBao: false,
         viTri,
     });
     await ctx.reply(response.isOk ? 'Điểm danh thành công!' : `Điểm danh thất bại! ${response.errorMessages?.[0]?.errorMessage || 'Unknown error'}`);
-};
-
-export default {
-    handler: (bot: Telegraf<BotContext>) => {
-        const listCheckinHandler = async (ctx: BotContext): Promise<void> => {
-            const responses: ListCheckinResponse = await schoolApi.getListCheckin(ctx.state.user.token);
-            if (responses.result?.length) {
-                let message = 'Danh sách điểm danh:\n';
-                const [formatedSchedule, buttons] = formatListCheckin(responses.result);
-                message += formatedSchedule;
-                await ctx.reply(message, {
-                    parse_mode: 'HTML',
-                    reply_markup: { inline_keyboard: buttons },
-                });
-            } else {
-                await ctx.reply('Không có lịch học để điểm danh');
-            }
-        };
-
-        bot.action(/checkin_(\d+)_(.+)/, async (ctx) => {
-            await handleCheckin(ctx, ctx.match[1], ctx.match[2]);
+}
+const listCheckinHandler = async (ctx: BotContext): Promise<void> => {
+    const responses: ListCheckinResponse = await schoolApi.getListCheckin(ctx.state.user.token);
+    if (responses.result?.length) {
+        let message = 'Danh sách điểm danh:\n';
+        const [formatedSchedule, buttons] = formatListCheckin(responses.result);
+        message += formatedSchedule;
+        await ctx.reply(message, {
+            parse_mode: 'HTML',
+            reply_markup: { inline_keyboard: buttons },
         });
-
-        return listCheckinHandler;
-    },
-    handleReply, // Xuất hàm handleReply để bot.ts gọi
+    } else {
+        await ctx.reply('Không có lịch học để điểm danh');
+    }
 };
+export const handler = (bot: Telegraf<BotContext>) => {
+    bot.action(/checkin_(\d+)_(.+)/, async (ctx) => {
+        await handleCheckin(ctx, ctx.match[1], ctx.match[2]);
+    });
+
+    return listCheckinHandler;
+}
+

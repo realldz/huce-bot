@@ -13,20 +13,19 @@ function initGradesActions(bot: Telegraf<any>) {
   bot.action(/gradeDetail_([^|]+)\|(.+)/, async (ctx) => handleGradeDetailAction(ctx));
 }
 
-export default {
-  handler: (bot: Telegraf<any>) => async (ctx: any) => {
-    logger.debug('Bắt đầu xử lý lệnh /grades');
 
-    try {
-      const grades = await fetchGradesAndCache(ctx);
-      if (!grades) return;
+export const handler = (bot: Telegraf<any>) => async (ctx: any) => {
+  logger.debug('Bắt đầu xử lý lệnh /grades');
 
-      await sendOverviewMessage(ctx, grades);
-      await sendSemesterSummaryMessage(ctx, grades);
-      initGradesActions(bot);
-    } catch (error) {
-      logger.error(`Lỗi khi xử lý /grades: ${error.message}`);
-      ctx.reply('Có lỗi khi lấy kết quả học tập!');
-    }
-  },
-};
+  try {
+    const grades = await fetchGradesAndCache(ctx);
+    if (!grades) return;
+
+    await sendOverviewMessage(ctx, grades);
+    await sendSemesterSummaryMessage(ctx, grades);
+    initGradesActions(bot);
+  } catch (error) {
+    logger.error(`Lỗi khi xử lý /grades: ${(error as Error).message}`);
+    ctx.reply('Có lỗi khi lấy kết quả học tập!');
+  }
+}

@@ -77,10 +77,9 @@ const newsDetailActionHandler = async (ctx: any): Promise<void> => {
 };
 
 // Export handler với bot.action
-export default {
-  handler: (bot: Telegraf<BotContext>) => {
-    bot.action(/news_(\d+)_(.+)/, newsActionHandler);
-    bot.action(/newsDetail_(.+)/, newsDetailActionHandler);
-    return newsHandler;
-  },
-};
+
+export const handler = (bot: Telegraf<BotContext>) => {
+  bot.action(/news_(\d+)_(.+)/, newsActionHandler);
+  bot.action(/newsDetail_(.+)/, newsDetailActionHandler);
+  return newsHandler;
+}

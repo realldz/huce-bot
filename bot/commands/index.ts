@@ -1,0 +1,11 @@
+export * as start from './start';
+export * as login from './login';
+export * as schedule from './schedule';
+export * as notices from './notices';
+export * as info from './info';
+export * as grades from './grades';
+export * as logout from './logout';
+export * as help from './help';
+export * as news from './news';
+export * as checkin from './checkin';
+export * as debt from './debt';
