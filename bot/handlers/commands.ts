@@ -23,13 +23,13 @@ export const registerCommands = (bot: Telegraf<BotContext>) => {
   // Register all command handlers
   bot.start(requireMessage, commands.start.handler);
   bot.command('login', requireMessage, commands.login.handler);
-  bot.command('schedule', requireAuth, requireMessage, commands.schedule.handler);
-  bot.command('notices', requireAuth, requireMessage, commands.notices.handler);
-  bot.command('info', requireAuth, requireMessage, commands.info.handler);
-  bot.command('grades', requireAuth, commands.grades.handler(bot));
-  bot.command('news', requireAuth, commands.news.handler(bot));
+  bot.command('schedule', requireMessage, commands.schedule.handler);
+  bot.command('notices', requireMessage, commands.notices.handler);
+  bot.command('info', requireMessage, commands.info.handler);
+  bot.command('grades', commands.grades.handler(bot));
+  bot.command('news', commands.news.handler(bot));
   bot.command('logout', requireMessage, commands.logout.handler);
   bot.command('help', requireMessage, commands.help.handler);
-  bot.command('checkin', requireAuth, commands.checkin.handler(bot));
+  bot.command('checkin', commands.checkin.handler(bot));
   bot.command('debt', requireAuth, commands.debt.handler);
 };

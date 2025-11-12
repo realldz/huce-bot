@@ -27,18 +27,18 @@ export async function fetchGradesAndCache(ctx: BotContext) {
 }
 
 export async function sendOverviewMessage(ctx: any, grades: GradesResponse) {
-  const tongQuanText = grades.result.tongQuans
+  const tongQuanText = grades.result?.tongQuans
     .map((item) => `<b>${item.label}:</b> <code>${item.value || 'N/A'}</code>`)
     .join('\n');
   await ctx.reply(`<b>Tổng quan kết quả học tập:</b>\n${tongQuanText}`, { parse_mode: 'HTML' });
 }
 
 export async function sendSemesterSummaryMessage(ctx: any, grades: GradesResponse) {
-  const tongKetText = grades.result.tongKetHocKys
+  const tongKetText = grades.result?.tongKetHocKys
     .map((hk) => `<b>${hk.tenDot}</b>\n${hk.datas.map((d) => `<b>${d.label}:</b> <code>${d.value || 'N/A'}</code>`).join('\n')}`)
     .join('\n\n');
-  const buttons = grades.result.tongKetHocKys.map((hk) => [{ text: hk.tenDot, callback_data: `grades_${hk.idDot}` }]);
-  buttons.push([{ text: 'Xem tất cả', callback_data: 'grades_all' }]);
+  const buttons = grades.result?.tongKetHocKys.map((hk) => [{ text: hk.tenDot, callback_data: `grades_${hk.idDot}` }]);
+  buttons?.push([{ text: 'Xem tất cả', callback_data: 'grades_all' }]);
 
   await ctx.reply(`<b>Tổng kết học kỳ:</b>\n${tongKetText}\n\nChọn học kỳ để xem chi tiết:`, {
     parse_mode: 'HTML',
@@ -60,12 +60,12 @@ export async function handleGradesAction(ctx: any) {
   }
 
   if (callbackData === 'all') {
-    const replyText = cachedData.grades.result.tongKetHocKys
+    const replyText = cachedData.grades.result?.tongKetHocKys
       .map((hk) => `<b>${hk.tenDot}</b>\n${hk.chiTiets.map((ct) => `<b>${ct.tenMonHoc}</b>: <code>${ct.diemTrungBinh}</code>`).join('\n')}`)
       .join('\n\n');
     await ctx.reply(replyText, { parse_mode: 'HTML' });
   } else {
-    const hk = cachedData.grades.result.tongKetHocKys.find((h) => h.idDot.toString() === callbackData);
+    const hk = cachedData.grades.result?.tongKetHocKys.find((h) => h.idDot.toString() === callbackData);
     const replyText = [];
     if (hk) {
       const buttons = hk.chiTiets.map((ct) => [
@@ -98,26 +98,20 @@ export async function handleGradeDetailAction(ctx: any) {
   }
   const { grades } = cachedData;
   const detail: GradeDetailResponse = await schoolApi.getGradeDetail(ctx.state.user.token, idLopHocPhan);
-  const rowsText = detail.result.rows
+  const rowsText = detail.result?.rows
     .filter((row) => row.level3 && row.value !== null)
     .map((row) => {
-      let label = row.level3.replace(/\n/g, ' ');
-      if (row.level2) {
-        const level2Clean = row.level2.replace(/\n/g, ' ').trim();
-        if (level2Clean === 'ĐQT 30%') label = 'Điểm quá trình 30%';
-        else if (level2Clean === 'ĐQT 25%') label = 'Điểm quá trình 25%';
-        else if (level2Clean === 'ĐKT') label = `Điểm kết thúc ${row.level3}`;
-        else if (level2Clean === 'Được dự thi') label = 'Được dự thi';
-        else if (level2Clean === 'Điểm tổng kết') label = 'Điểm tổng kết';
-        else label = `${level2Clean} ${row.level3}`.trim();
-      }
+      const level1 = row.level1?.replace(/\n/g, ' ').trim();
+      const level2 = row.level2?.replace(/\n/g, ' ').trim();
+      const level3 = row.level3?.replace(/\n/g, ' ').trim();
+      let label = `${level1 ? `${level1 + ' '}` : ''}${level2 ? `${level2 + ' '}` : ''}${level3 ? `${level3 + ' '}` : ''}`
       const value = row.isCheck ? (row.value === '1' ? '✅' : '❌') : row.value;
       return `<b>${label}:</b> <code>${value}</code>`;
     })
     .join('\n');
 
   let tenMonHoc = 'Không xác định';
-  grades.result.tongKetHocKys.forEach((hk) => {
+  grades.result?.tongKetHocKys.forEach((hk) => {
     const mon = hk.chiTiets.find((ct) => ct.idLopHocPhan.toString() === idLopHocPhan);
     if (mon) tenMonHoc = mon.tenMonHoc;
   });
