@@ -9,7 +9,7 @@ import { checkin } from "../commands";
 export const registerListeners = (bot: Telegraf<BotContext>) => {
   // Đăng ký xử lý tin nhắn reply (dùng cho checkin)
   // Phải được đăng ký trước middleware xử lý lệnh không hợp lệ
-  bot.on('message', requireMessage, checkin.handler(bot));
+  // bot.on('message', requireMessage, checkin.handler(bot));
   // Xử lý lệnh không hợp lệ, nhưng bỏ qua tin nhắn reply và callback query
   bot.use(async (ctx: BotContext, next) => {
     // Bỏ qua nếu là callback query hoặc không có message

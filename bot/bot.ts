@@ -6,9 +6,11 @@ import logger from '@/utils/logger';
 import { BotContext } from '@/interfaces/common';
 import { registerCommands } from './handlers/commands';
 import { registerListeners } from './handlers/listeners';
+import { onlyAllowPrivateChat } from './middleware/onlyAllowPrivateChat';
 
 const setupMiddleware = (bot: Telegraf<BotContext>) => {
   // Logging middleware
+  bot.use(onlyAllowPrivateChat);
   bot.use(loggingMiddleware);
   bot.use(requireAuth);
 };
