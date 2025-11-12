@@ -35,7 +35,12 @@ export const handler = async (ctx: BotContext): Promise<void> => {
       return;
     }
 
-    const { token, idSinhVien }: AuthResult = await schoolApi.login(studentId, password);
+    const authResult: AuthResult | null = await schoolApi.login(studentId, password);
+    if (!authResult) {
+      ctx.reply('Đăng nhập thất bại. Vui lòng kiểm tra lại mã sinh viên và mật khẩu.');
+      return;
+    }
+    const { token, idSinhVien } = authResult;
     await userModel.saveUser(ctx.from.id.toString(), studentId, token, idSinhVien);
     logger.info(`Người dùng ${ctx.from.username || 'N/A'} (ID: ${ctx.from.id}) đăng nhập thành công với mã SV: ${studentId}`);
     ctx.reply('Đăng nhập thành công! Dùng /help để xem danh sách lệnh.');

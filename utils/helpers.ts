@@ -22,7 +22,6 @@ export function formatSchedule(scheduleResponse: ScheduleResponse): string {
       const formattedDate = `${dayOfWeek}, ${day}/${month}`;
 
       const tietHoc = item.tietHocThi;
-      const gio = PeriodRange2[item.tietHocThi];
       const tenMonHoc = item.tenMonHoc;
       const phongHoc = item.tenPhong;
       const loaiLich = item.loaiLich === 1
@@ -37,6 +36,9 @@ export function formatSchedule(scheduleResponse: ScheduleResponse): string {
         (detail) => detail.label === "Giảng viên"
       );
       const giangVien = giangVienObj ? giangVienObj.value : "Chưa rõ";
+      const gio = item.chiTiets.find(
+        (detail) => detail.label === "Giờ"
+      )?.value || null;
 
       return (
         `<b>Ngày:</b> ${formattedDate}\n` +

@@ -10,6 +10,7 @@ import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "@/interfac
 import { load } from 'cheerio';
 import customAxios from './customAxios';
 import { DebtResponse } from '@/interfaces/payment/debt';
+import logger from '@/utils/logger';
 
 
 const postRequest = async <T>(
@@ -28,7 +29,7 @@ const postRequest = async <T>(
   return response.data;
 };
 
-const login = async (studentId: string, password: string): Promise<AuthResult> => {
+const login = async (studentId: string, password: string): Promise<AuthResult | null> => {
   const params = new URLSearchParams();
   params.append('url_uni', config.SCHOOL_API_BASEURL + '/AppSVGV');
   params.append('username', `${studentId}2${config.SCHOOL_CODE}`);
@@ -45,13 +46,18 @@ const login = async (studentId: string, password: string): Promise<AuthResult> =
       undefined,
       'application/x-www-form-urlencoded'
     );
-    const token = response.access_token;
-    const studentInfo = await getStudentInfo(token);
-    const idSinhVien = studentInfo.result.idSinhVien;
+    if ('access_token' in response) {
+      const token = response.access_token;
+      const studentInfo = await getStudentInfo(token);
+      const idSinhVien = studentInfo.result?.idSinhVien;
+      if (!idSinhVien) throw new Error('Không tìm thấy thông tin sinh viên!');
 
-    return { token, idSinhVien };
+      return { token, idSinhVien };
+    } else {
+      return null;
+    }
   } catch (error) {
-    throw new Error('Đăng nhập thất bại, kiểm tra lại mã sinh viên hoặc mật khẩu!');
+    throw new Error((error as Error).message);
   }
 };
 
@@ -104,7 +110,7 @@ const getNewsCategories = async (token: string): Promise<NewsCategory[]> => {
     {},
     token
   );
-  return response.result;
+  return response.result ?? [];
 };
 
 const parseNewsHtml = (html: string): NewsItem[] => {
@@ -141,7 +147,7 @@ const getNewsDetail = async (token: string, newsId: number): Promise<NewsDetail>
     { id: newsId },
     token
   );
-  return response.result;
+  return response.result ?? {} as NewsDetail;
 };
 
 const getListCheckin = async (token: string): Promise<ListCheckinResponse> => {

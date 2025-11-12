@@ -33,9 +33,14 @@ const formatDate = (dateStr: string): string => {
 };
 
 const getWeekRange = (): { tuNgay: string; denNgay: string } => {
-  const today = getCurrentIsoDate();
-  const firstDay = new Date(today.setDate(today.getDate() - today.getDay())); // Chủ nhật
-  const lastDay = new Date(today.setDate(firstDay.getDate() + 6)); // Thứ bảy
+  const today = new Date();
+  const day = today.getDay() || 7; // Chủ nhật = 0 → chuyển thành 7
+
+  const firstDay = new Date(today);
+  firstDay.setDate(today.getDate() - day + 1); // Thứ 2
+
+  const lastDay = new Date(firstDay);
+  lastDay.setDate(firstDay.getDate() + 6); // Chủ nhật
 
   return {
     tuNgay: firstDay.toISOString().split('T')[0] + 'T00:00:00.000',
