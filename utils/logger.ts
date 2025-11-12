@@ -16,7 +16,7 @@ const formatLogMessage = (...messages: any[]): string => {
 const customFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
   winston.format.printf(({ timestamp, level, message }) => {
-    return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+    return `${timestamp} [${level.toUpperCase()}]: ${String(message)}`;
   })
 );
 
@@ -37,9 +37,9 @@ const originalLogMethods = {
   debug: logger.debug,
 };
 
-logger.info = (...args: any[]) => originalLogMethods.info.call(logger, formatLogMessage(...args));
-logger.warn = (...args: any[]) => originalLogMethods.warn.call(logger, formatLogMessage(...args));
-logger.error = (...args: any[]) => originalLogMethods.error.call(logger, formatLogMessage(...args));
-logger.debug = (...args: any[]) => originalLogMethods.debug.call(logger, formatLogMessage(...args));
+logger.info = (...args: any[]) => originalLogMethods.info.call(logger, { message: formatLogMessage(...args) });
+logger.warn = (...args: any[]) => originalLogMethods.warn.call(logger, { message: formatLogMessage(...args) });
+logger.error = (...args: any[]) => originalLogMethods.error.call(logger, { message: formatLogMessage(...args) });
+logger.debug = (...args: any[]) => originalLogMethods.debug.call(logger, { message: formatLogMessage(...args) });
 
 export default logger;
