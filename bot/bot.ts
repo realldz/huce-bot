@@ -2,7 +2,6 @@ import { Telegraf } from 'telegraf';
 import config from '@/config/config';
 import { requireAuth } from './middleware/auth';
 import { loggingMiddleware } from './middleware/logging';
-import logger from '@/utils/logger';
 import { BotContext } from '@/interfaces/common';
 import { registerCommands } from './handlers/commands';
 import { registerListeners } from './handlers/listeners';

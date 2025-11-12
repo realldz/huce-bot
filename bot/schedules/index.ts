@@ -62,5 +62,5 @@ export function startScheduler(bot: Telegraf<BotContext>) {
       }
     });
   });
-  logger.info(`Scheduler đã khởi động với các task: ${(tasks.map(t => t.name))}`);
+  logger.info(`Scheduler đã khởi động với các task: ${JSON.stringify(tasks).replace(/,/g, ', ')}`);
 }

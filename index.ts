@@ -9,18 +9,17 @@ async function startBot() {
 
         const useWebhook = process.env.WEBHOOK_DOMAIN !== '';
 
-        await bot.launch({
+        bot.launch({
             ...(useWebhook && {
                 webhook: {
-                    domain: process.env.WEBHOOK_DOMAIN!,   // bắt buộc khi bật webhook
+                    domain: process.env.WEBHOOK_DOMAIN!,
                     port: Number(process.env.PORT) || 3000,
                 },
             }),
+        }, () => {
+            logger.info('Bot đã khởi động thành công');
+            startScheduler(bot);
         });
-
-        logger.info('Bot đã khởi động thành công');
-
-        startScheduler(bot);
     } catch (err) {
         logger.error('Lỗi khi khởi động bot:', err);
         process.exit(1);

@@ -78,7 +78,7 @@ export function formatListCheckin(checkins: CheckinItem[]): [string, InlineKeybo
   }
 
   let text = '';
-  let buttons = [];
+  let buttons: InlineKeyboardButton[][] = [];
 
   checkins.map((checkin) => {
     const ngayHoc = new Date(checkin.ngayHoc).toLocaleDateString('vi-VN');
@@ -86,7 +86,7 @@ export function formatListCheckin(checkins: CheckinItem[]): [string, InlineKeybo
     checkin.chiTiets.forEach((chiTiet) => {
       text += `<b>${chiTiet.label}:</b> ${chiTiet.value}\n`;
       if (chiTiet.label === 'Tiết') {
-        const time = PeriodRange[chiTiet.value];
+        const time = PeriodRange[chiTiet.value as keyof typeof PeriodRange];
         text += `<b>Giờ:</b> ${time}\n`;
       }
     });

@@ -7,16 +7,15 @@ import { Notice } from '@/interfaces/sinhvien/notices';
 
 export const handler = async (ctx: BotContext): Promise<void> => {
   try {
-    const notices: Notice[] = (await schoolApi.getNotices(ctx.state.user!.token)).result;
-    logger.debug(notices);
-    if (notices.length === 0) {
+    const notices = await schoolApi.getNotices(ctx.state.user!.token);
+    if (!notices.result) {
       await ctx.reply('Không có nhắc nhở nào!');
       return;
     }
     const header = '📌 <b>Danh sách nhắc nhở</b> 📌';
-    const formattedText = `${header}\n${formatNotices(notices)}`;
+    const formattedText = `${header}\n${formatNotices(notices.result)}`;
     await ctx.reply(formattedText, { parse_mode: 'HTML' });
-    notices.forEach(async (notice) => {
+    notices.result.forEach(async (notice) => {
       schoolApi.updateNoticeStatus(ctx.state.user!.token, notice.idMap, notice.id);
     });
 
