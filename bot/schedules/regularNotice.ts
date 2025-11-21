@@ -9,7 +9,7 @@ import { BotContext } from "@/interfaces/common";
 
 export async function regularNoticeTask(bot: Telegraf<BotContext>): Promise<void> {
   try {
-    const users: User[] | undefined = await userModel.getAllUsers();
+    const users: User[] = await userModel.getAllUsers();
     if (!users || users.length === 0) {
       logger.info('Không có người dùng nào để gửi nhắc nhở');
       return;
