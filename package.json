@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "bun index.ts",
+    "start": "bun src/index.ts",
     "build": "tsc",
-    "dev": "bun --watch run index.ts",
+    "dev": "bun --watch run src/index.ts",
     "typecheck": "tsc",
     "typecheck:watch": "tsc -w"
   },
