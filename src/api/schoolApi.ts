@@ -10,8 +10,6 @@ import { CheckinRequest, CheckinResponse, ListCheckinResponse } from "@/interfac
 import { load } from 'cheerio';
 import customAxios from './customAxios';
 import { DebtResponse } from '@/interfaces/payment/debt';
-import logger from '@/utils/logger';
-
 
 const postRequest = async <T>(
   url: string,

@@ -1,19 +1,20 @@
 import bot from './bot/bot';
 import logger from './utils/logger';
 import { startScheduler } from './bot/schedules';
+import config from './config/config';
 
 // Khởi động bot
 async function startBot() {
     try {
         logger.info('Bot đang khởi động...');
 
-        const useWebhook = process.env.WEBHOOK_DOMAIN !== '';
+        const useWebhook = config.WEBHOOK_DOMAIN !== '';
 
         bot.launch({
             ...(useWebhook && {
                 webhook: {
-                    domain: process.env.WEBHOOK_DOMAIN!,
-                    port: Number(process.env.PORT) || 3000,
+                    domain: config.WEBHOOK_DOMAIN!,
+                    port: Number(config.PORT) || 3000,
                 },
             }),
         }, () => {
