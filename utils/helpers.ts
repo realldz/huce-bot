@@ -3,6 +3,7 @@ import { ScheduleItem, ScheduleResponse } from '@/interfaces/sinhvien/schedule';
 import { CheckinItem } from '@/interfaces/sinhvien/checkin';
 import { InlineKeyboardButton } from '@telegraf/types';
 import { PeriodRange, PeriodRange2 } from '@/enums/period';
+import { ScheduleTypeEnum } from '@/enums/schedule';
 
 // Định nghĩa interface cho dữ liệu lịch học từ API
 
@@ -24,21 +25,14 @@ export function formatSchedule(scheduleResponse: ScheduleResponse): string {
       const tietHoc = item.tietHocThi;
       const tenMonHoc = item.tenMonHoc;
       const phongHoc = item.tenPhong;
-      const loaiLich = item.loaiLich === 1
-        ? "Lịch học"
-        : item.loaiLich === 2
-          ? "Lịch thi"
-          : item.loaiLich === 3
-            ? "Lịch học online"
-            : "Không xác định";
+      const loaiLich = ScheduleTypeEnum[item.loaiLich]
       const tamNgung = item.isTamNgung ? " [Nghỉ]" : "";
-      const giangVienObj = item.chiTiets.find(
+      const giangVien = item.chiTiets.find(
         (detail) => detail.label === "Giảng viên"
-      );
-      const giangVien = giangVienObj ? giangVienObj.value : "Chưa rõ";
+      )?.value || '';
       const gio = item.chiTiets.find(
         (detail) => detail.label === "Giờ"
-      )?.value || null;
+      )?.value || '';
 
       return (
         `<b>Ngày:</b> ${formattedDate}\n` +

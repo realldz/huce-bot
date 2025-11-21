@@ -20,21 +20,25 @@ export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void
       try {
         // const schedule = await schoolApi.getSchedule(user.token, today, today);
         // const formattedSchedule = formatSchedule(schedule);
-        const schedule = (await schoolApi.getListCheckin(user.token)).result;
+        const schedule = await schoolApi.getSchedule(user.token);
 
-        if (!schedule || schedule.length === 0) {
+        if (!schedule.isOk) {
+          logger.error('Lỗi khi lấy lịch học');
+          continue;
+        }
+        if (schedule.result?.length === 0) {
           logger.info(`Không có lịch học cho user ${user.telegramId}`);
           continue;
         }
 
-        const [formattedSchedule, buttons] = formatListCheckin(schedule);
+        const formattedSchedule = formatSchedule(schedule);
         logger.debug(`Lịch học hôm nay cho user ${user.telegramId}: ${formattedSchedule}`);
-        logger.debug(`Buttons: ${JSON.stringify(buttons)}`);
-
+        // logger.debug(`Buttons: ${JSON.stringify(buttons)}`);
 
         const message = `<b>Lịch học hôm nay (${today.split('T')[0].split('-')[2]
           }/${today.split('T')[0].split('-')[1]}):</b>\n\n${formattedSchedule}`;
-        await bot.telegram.sendMessage(user.telegramId, message, { parse_mode: 'HTML', reply_markup: { inline_keyboard: buttons } });
+        await bot.telegram.sendMessage(user.telegramId, message, { parse_mode: 'HTML' });
+        // await bot.telegram.sendMessage(user.telegramId, message, { parse_mode: 'HTML', reply_markup: { inline_keyboard: buttons } });
         logger.info(`Đã gửi thông báo lịch học cho user ${user.telegramId}`);
       } catch (userError) {
         const err = userError as Error;
