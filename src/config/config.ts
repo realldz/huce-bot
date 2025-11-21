@@ -15,7 +15,7 @@ interface Config {
 const config: Config = {
   TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN || '',
   SCHOOL_API_BASEURL: process.env.SCHOOL_API_BASEURL || '',
-  DB_PATH: process.env.DB_PATH || './database/users.db',
+  DB_PATH: process.env.DB_PATH || './users.db',
   CLIENT_SECRET: process.env.CLIENT_SECRET || '',
   SCHOOL_CODE: process.env.SCHOOL_CODE || '',
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
