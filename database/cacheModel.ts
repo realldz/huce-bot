@@ -20,7 +20,7 @@ const cacheModel = {
     }
 
     if (Date.now() > row.expiresAt) {
-      await dbRun('DELETE FROM cache WHERE key = ?', [key]);
+      await this.delete(key);
       return null;
     }
 

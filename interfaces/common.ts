@@ -19,6 +19,7 @@ export interface errorMessages {
 }
 
 export interface BotContext extends Context {
+  match?: Array<any>;
   state: {
     user?: any;
     studentId?: string;

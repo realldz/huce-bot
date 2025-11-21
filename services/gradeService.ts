@@ -26,7 +26,7 @@ export async function fetchGradesAndCache(ctx: BotContext) {
   return grades;
 }
 
-export async function sendOverviewMessage(ctx: any, grades: GradesResponse) {
+export async function sendOverviewMessage(ctx: BotContext, grades: GradesResponse) {
   const tongQuanText = grades.result?.tongQuans
     .map((item) => `<b>${item.label}:</b> <code>${item.value || 'N/A'}</code>`)
     .join('\n');
@@ -46,10 +46,10 @@ export async function sendSemesterSummaryMessage(ctx: any, grades: GradesRespons
   });
 }
 
-export async function handleGradesAction(ctx: any) {
-  const callbackData = ctx.match[1];
+export async function handleGradesAction(ctx: BotContext) {
+  const callbackData = ctx.match?.[1];
   logger.debug('handleGradesAction callbackData:', callbackData);
-  const cacheKey = `${ctx.chat.id}_${ctx.state.user.studentId}_grades`;
+  const cacheKey = `${ctx.chat?.id}_${ctx.state.user.studentId}_grades`;
   const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
   logger.debug('handleGradesAction cacheKey:', cacheKey);
 
@@ -63,7 +63,7 @@ export async function handleGradesAction(ctx: any) {
     const replyText = cachedData.grades.result?.tongKetHocKys
       .map((hk) => `<b>${hk.tenDot}</b>\n${hk.chiTiets.map((ct) => `<b>${ct.tenMonHoc}</b>: <code>${ct.diemTrungBinh}</code>`).join('\n')}`)
       .join('\n\n');
-    await ctx.reply(replyText, { parse_mode: 'HTML' });
+    await ctx.reply(replyText || 'Không có dữ liệu chi tiết.', { parse_mode: 'HTML' });
   } else {
     const hk = cachedData.grades.result?.tongKetHocKys.find((h) => h.idDot.toString() === callbackData);
     const replyText = [];
@@ -87,8 +87,8 @@ export async function handleGradesAction(ctx: any) {
   await ctx.answerCbQuery();
 }
 
-export async function handleGradeDetailAction(ctx: any) {
-  const [idLopHocPhan, cacheKey] = [ctx.match[1], ctx.match[2]];
+export async function handleGradeDetailAction(ctx: BotContext) {
+  const [idLopHocPhan, cacheKey] = [ctx.match?.[1], ctx.match?.[2]];
   logger.debug('handleGradeDetailAction idLopHocPhan:', idLopHocPhan);
   logger.debug('handleGradeDetailAction cacheKey:', cacheKey);
   const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);

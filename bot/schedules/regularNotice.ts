@@ -19,7 +19,7 @@ export async function regularNoticeTask(bot: Telegraf<BotContext>): Promise<void
       logger.debug(`Đang gửi nhắc nhở cho user ${user.telegramId}`);
 
       const notices = await schoolApi.getNotices(user.token);
-      if (!notices.result) {
+      if (!notices.result || notices.result?.length === 0) {
         logger.debug(`Không có nhắc nhở nào cho user ${user.telegramId}`);
         continue;
       }
