@@ -26,7 +26,7 @@ export async function dailyScheduleTask(bot: Telegraf<BotContext>): Promise<void
           logger.error('Lỗi khi lấy lịch học');
           continue;
         }
-        if (schedule.result?.length === 0) {
+        if (!schedule.result || schedule.result?.length === 0) {
           logger.info(`Không có lịch học cho user ${user.telegramId}`);
           continue;
         }
