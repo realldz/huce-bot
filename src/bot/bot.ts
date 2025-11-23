@@ -6,6 +6,7 @@ import { BotContext } from '@/interfaces/common';
 import { registerCommands } from './handlers/commands';
 import { registerListeners } from './handlers/listeners';
 import { onlyAllowPrivateChat } from './middleware/onlyAllowPrivateChat';
+import { registerActions } from './handlers/actions';
 
 const setupMiddleware = (bot: Telegraf<BotContext>) => {
   // Logging middleware
@@ -17,6 +18,8 @@ const setupMiddleware = (bot: Telegraf<BotContext>) => {
 const registerHandlers = (bot: Telegraf<BotContext>) => {
   registerCommands(bot);
   registerListeners(bot);
+  registerActions(bot);
+
 };
 
 const setupGracefulShutdown = (bot: Telegraf<BotContext>) => {

@@ -4,6 +4,8 @@ import { GradeDetailResponse, GradesResponse } from '@/interfaces/sinhvien/grade
 import schoolApi from "@/api/schoolApi";
 import { BotContext } from '@/interfaces/common';
 import cacheModel from '@/database/cacheModel';
+import { InlineKeyboardButton } from '@telegraf/types';
+import { formatGradeDetail, formatGradeDetailRow } from '@/utils/helpers/grade';
 
 export async function fetchGradesAndCache(ctx: BotContext) {
   const user = ctx.state.user;
@@ -26,96 +28,84 @@ export async function fetchGradesAndCache(ctx: BotContext) {
   return grades;
 }
 
-export async function sendOverviewMessage(ctx: BotContext, grades: GradesResponse) {
+export async function sendOverviewMessage(ctx: BotContext, grades: GradesResponse): Promise<string | undefined> {
   const tongQuanText = grades.result?.tongQuans
     .map((item) => `<b>${item.label}:</b> <code>${item.value || 'N/A'}</code>`)
     .join('\n');
-  await ctx.reply(`<b>Tổng quan kết quả học tập:</b>\n${tongQuanText}`, { parse_mode: 'HTML' });
+  return tongQuanText;
 }
 
-export async function sendSemesterSummaryMessage(ctx: any, grades: GradesResponse) {
+export async function sendSemesterSummaryMessage(ctx: any, grades: GradesResponse): Promise<[string | undefined, InlineKeyboardButton[][] | undefined]> {
   const tongKetText = grades.result?.tongKetHocKys
     .map((hk) => `<b>${hk.tenDot}</b>\n${hk.datas.map((d) => `<b>${d.label}:</b> <code>${d.value || 'N/A'}</code>`).join('\n')}`)
     .join('\n\n');
-  const buttons = grades.result?.tongKetHocKys.map((hk) => [{ text: hk.tenDot, callback_data: `grades_${hk.idDot}` }]);
-  buttons?.push([{ text: 'Xem tất cả', callback_data: 'grades_all' }]);
-
-  await ctx.reply(`<b>Tổng kết học kỳ:</b>\n${tongKetText}\n\nChọn học kỳ để xem chi tiết:`, {
-    parse_mode: 'HTML',
-    reply_markup: { inline_keyboard: buttons },
-  });
+  const buttons: InlineKeyboardButton[][] | undefined = grades.result?.tongKetHocKys.map((hk) => [{ text: hk.tenDot, callback_data: `grade/${hk.idDot}` }]);
+  buttons?.push([{ text: 'Xem tất cả', callback_data: 'grade/all' }]);
+  return [tongKetText, buttons];
 }
 
-export async function handleGradesAction(ctx: BotContext) {
+export async function handleGradesAction(ctx: BotContext): Promise<[string[], InlineKeyboardButton[][]]> {
   const callbackData = ctx.match?.[1];
   logger.debug('handleGradesAction callbackData:', callbackData);
-  const cacheKey = `${ctx.chat?.id}_${ctx.state.user.studentId}_grades`;
+  const cacheKey = `${ctx.state.user.telegramId}_${ctx.state.user.studentId}_grades`;
   const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
   logger.debug('handleGradesAction cacheKey:', cacheKey);
+  const replyText: string[] = [];
+  const button: InlineKeyboardButton[][] = [];
 
   if (!cachedData) {
     logger.warn('Không tìm thấy dữ liệu trong cache');
-    await ctx.reply('Dữ liệu đã hết hạn, thử gửi lại /grades!');
-    return;
+    replyText.push('Dữ liệu đã hết hạn, thử gửi lại /grades!');
+    return [replyText, button];
   }
 
   if (callbackData === 'all') {
-    const replyText = cachedData.grades.result?.tongKetHocKys
+    const tongKetHocKys = cachedData.grades.result?.tongKetHocKys
       .map((hk) => `<b>${hk.tenDot}</b>\n${hk.chiTiets.map((ct) => `<b>${ct.tenMonHoc}</b>: <code>${ct.diemTrungBinh}</code>`).join('\n')}`)
-      .join('\n\n');
-    await ctx.reply(replyText || 'Không có dữ liệu chi tiết.', { parse_mode: 'HTML' });
+      .join('\n\n') ?? 'Không có dữ liệu';
+
+    replyText.push(tongKetHocKys);
+
+    return [replyText, []];
   } else {
     const hk = cachedData.grades.result?.tongKetHocKys.find((h) => h.idDot.toString() === callbackData);
-    const replyText = [];
     if (hk) {
-      const buttons = hk.chiTiets.map((ct) => [
-        { text: `${ct.tenMonHoc} - Chi tiết`, callback_data: `gradeDetail_${ct.idLopHocPhan}|${cacheKey}` },
+      const chiTiets = hk.chiTiets.map((ct) => [
+        { text: `${ct.tenMonHoc} - Chi tiết`, callback_data: `grade/detail/${ct.idLopHocPhan}` },
       ]);
-      const chiTietText = hk.chiTiets
-        .map((ct) => `<b>${ct.tenMonHoc}</b> (${ct.soTinChi} TC): <code>${ct.diemTrungBinh}</code>`)
-        .join('\n');
+      button.push(...chiTiets);
+      const chiTietText = formatGradeDetail(hk.chiTiets);
       replyText.push(`<b>${hk.tenDot}</b>\n${chiTietText}`);
-      await ctx.reply(
-        replyText.join('\n\n'),
-        {
-          parse_mode: 'HTML',
-          reply_markup: { inline_keyboard: buttons },
-        }
-      );
+    } else {
+      replyText.push('Không tìm thấy dữ liệu');
     }
   }
-  await ctx.answerCbQuery();
+  return [replyText, button];
 }
 
-export async function handleGradeDetailAction(ctx: BotContext) {
-  const [idLopHocPhan, cacheKey] = [ctx.match?.[1], ctx.match?.[2]];
+export async function handleGradeDetailAction(ctx: BotContext): Promise<[string | undefined, string | undefined, number | undefined]> {
+  const idLopHocPhan = ctx.match?.[1];
+  const cacheKey = `${ctx.state.user.telegramId}_${ctx.state.user.studentId}_grades`;
   logger.debug('handleGradeDetailAction idLopHocPhan:', idLopHocPhan);
   logger.debug('handleGradeDetailAction cacheKey:', cacheKey);
   const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
   if (!cachedData) {
-    await ctx.reply('Dữ liệu đã hết hạn, thử gửi lại /grades!');
-    return;
+    return [undefined, undefined, undefined];
   }
   const { grades } = cachedData;
   const detail: GradeDetailResponse = await schoolApi.getGradeDetail(ctx.state.user.token, idLopHocPhan);
-  const rowsText = detail.result?.rows
-    .filter((row) => row.level3 && row.value !== null)
-    .map((row) => {
-      const level1 = row.level1?.replace(/\n/g, ' ').trim();
-      const level2 = row.level2?.replace(/\n/g, ' ').trim();
-      const level3 = row.level3?.replace(/\n/g, ' ').trim();
-      let label = `${level1 ? `${level1 + ' '}` : ''}${level2 ? `${level2 + ' '}` : ''}${level3 ? `${level3 + ' '}` : ''}`
-      const value = row.isCheck ? (row.value === '1' ? '✅' : '❌') : row.value;
-      return `<b>${label}:</b> <code>${value}</code>`;
-    })
-    .join('\n');
+  const rowsText = formatGradeDetailRow(detail.result?.rows)
 
-  let tenMonHoc = 'Không xác định';
+  let tenMonHoc = '';
+  let idDot = 0;
   grades.result?.tongKetHocKys.forEach((hk) => {
-    const mon = hk.chiTiets.find((ct) => ct.idLopHocPhan.toString() === idLopHocPhan);
-    if (mon) tenMonHoc = mon.tenMonHoc;
-  });
 
-  await ctx.reply(`<b>Chi tiết điểm:</b> ${tenMonHoc}\n${rowsText}`, { parse_mode: 'HTML' });
-  await ctx.answerCbQuery();
+    const mon = hk.chiTiets.find((ct) => ct.idLopHocPhan.toString() === idLopHocPhan);
+    if (mon) {
+      tenMonHoc = mon.tenMonHoc;
+      idDot = hk.idDot;
+    }
+  });
+  return [tenMonHoc, rowsText, idDot];
+
 }
