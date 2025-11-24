@@ -2,9 +2,10 @@ import { BotContext } from '@/interfaces/common';
 import logger from '@/utils/logger';
 import { Telegraf } from 'telegraf';
 import schoolApi from '@/api/schoolApi';
+import { InlineKeyboardButton } from '@telegraf/types';
 
 // Hàm xử lý lệnh /news
-const newsHandler = async (ctx: BotContext): Promise<void> => {
+export const handler = async (ctx: BotContext): Promise<void> => {
   try {
     const newsCategories = await schoolApi.getNewsCategories(ctx.state.user!.token);
     if (newsCategories.length === 0) {
@@ -13,31 +14,44 @@ const newsHandler = async (ctx: BotContext): Promise<void> => {
     }
     const text: string = 'Hãy chọn một danh mục tin tức:';
     const buttons = newsCategories.map((category) => [
-      { text: category.tenDanhMucTinTuc, callback_data: `news_${category.id}_${category.tenDanhMucTinTuc}` },
+      { text: category.tenDanhMucTinTuc, callback_data: `news/${category.id}_${category.tenDanhMucTinTuc}` },
     ]);
-    await ctx.reply(text, { parse_mode: 'HTML', reply_markup: { inline_keyboard: buttons } });
+
+    if (ctx.message && !ctx.callbackQuery)
+      await ctx.reply(text, {
+        parse_mode: 'HTML',
+        reply_markup: { inline_keyboard: buttons },
+      });
+    else if (ctx.callbackQuery) {
+      await ctx.editMessageText(text, {
+        parse_mode: 'HTML',
+        reply_markup: { inline_keyboard: buttons },
+      });
+      await ctx.answerCbQuery();
+    }
   } catch (error) {
     await ctx.reply((error as Error).message || 'Có lỗi khi lấy thông báo!');
   }
-};
+
+}
 
 // Hàm xử lý callback từ nút tin tức
-const newsActionHandler = async (ctx: any): Promise<void> => {
-  const [categoryIdMatch, categoryNameMatch] = [ctx.match[1], ctx.match[2]];
+const newsActionHandler = async (ctx: BotContext): Promise<void> => {
+  const [categoryIdMatch, categoryNameMatch] = [ctx.match?.[1], ctx.match?.[2]];
   logger.debug(`Đã nhận callback với categoryId: ${categoryIdMatch}, categoryName: ${categoryNameMatch}`);
   if (!categoryIdMatch) {
-    await ctx.reply('Không tìm thấy danh mục tin tức!');
+    await ctx.editMessageText('Không tìm thấy danh mục tin tức!');
     return;
   }
 
   const categoryId = categoryIdMatch;
-
+  const backButton: InlineKeyboardButton[][] = [[{ text: 'Quay lại', callback_data: `news` }]];
   try {
     logger.debug(`Gọi API getNews với categoryId: ${categoryId}`);
     const newsItems = await schoolApi.getNews(ctx.state.user!.token, Number(categoryId));
 
     if (newsItems.length === 0) {
-      await ctx.reply(`Không có tin tức nào trong danh mục <b>${categoryNameMatch}</b>!`, { parse_mode: 'HTML' });
+      await ctx.editMessageText(`Không có tin tức nào trong danh mục <b>${categoryNameMatch}</b>!`, { parse_mode: 'HTML', reply_markup: { inline_keyboard: backButton } });
       await ctx.answerCbQuery();
       return;
     }
@@ -46,11 +60,11 @@ const newsActionHandler = async (ctx: any): Promise<void> => {
     const text = newsItems
       .map((item) => `<b>${item.title}</b>\n${item.date}\n<a href="${item.link}">Xem chi tiết</a>`)
       .join('\n\n');
-    await ctx.reply(`Danh sách tin tức: <b>${categoryNameMatch}</b>\n${text}`, { parse_mode: 'HTML' });
+    await ctx.editMessageText(`Danh sách tin tức: <b>${categoryNameMatch}</b>\n${text}`, { parse_mode: 'HTML', reply_markup: { inline_keyboard: backButton } });
     await ctx.answerCbQuery();
   } catch (error) {
     logger.error(`Lỗi khi lấy tin tức: ${(error as Error).message}`);
-    await ctx.reply((error as Error).message || 'Có lỗi khi lấy tin tức!');
+    await ctx.editMessageText((error as Error).message || 'Có lỗi khi lấy tin tức!', { reply_markup: { inline_keyboard: backButton } });
     await ctx.answerCbQuery();
   }
 };
@@ -77,9 +91,8 @@ const newsDetailActionHandler = async (ctx: any): Promise<void> => {
 };
 
 // Export handler với bot.action
-
-export const handler = (bot: Telegraf<BotContext>) => {
-  bot.action(/news_(\d+)_(.+)/, newsActionHandler);
-  bot.action(/newsDetail_(.+)/, newsDetailActionHandler);
-  return newsHandler;
+export const initNewsActions = (bot: Telegraf<BotContext>) => {
+  bot.action(/news\/detail\/(.+)/, newsDetailActionHandler);
+  bot.action(/news\/(\d+)_(.+)/, newsActionHandler);
+  bot.action(/news/, handler);
 }

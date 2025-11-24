@@ -27,7 +27,7 @@ export const registerCommands = (bot: Telegraf<BotContext>) => {
   bot.command('notices', requireMessage, commands.notices.handler);
   bot.command('info', requireMessage, commands.info.handler);
   bot.command('grades', commands.grades.handler);
-  bot.command('news', commands.news.handler(bot));
+  bot.command('news', commands.news.handler);
   bot.command('logout', requireMessage, commands.logout.handler);
   bot.command('help', requireMessage, commands.help.handler);
   bot.command('checkin', commands.checkin.handler(bot));
