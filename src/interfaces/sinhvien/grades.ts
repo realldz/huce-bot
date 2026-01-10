@@ -31,6 +31,7 @@ export interface HocKy {
 
 export interface MonHoc {
   idLopHocPhan: number;
+  maMonHoc: string;
   tenMonHoc: string;
   soTinChi: number;
   diemTrungBinh: number;
