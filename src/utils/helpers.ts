@@ -22,26 +22,25 @@ export function formatSchedule(scheduleResponse: ScheduleResponse): string {
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const formattedDate = `${dayOfWeek}, ${day}/${month}`;
 
-      const tietHoc = item.tietHocThi;
       const tenMonHoc = item.tenMonHoc;
-      const phongHoc = item.tenPhong;
       const loaiLich = ScheduleTypeEnum[item.loaiLich]
+      const linkOnlines = [
+        item.linkOnline ? `<a href="${item.linkOnline}">Link online 1</a>` : null,
+        item.linkOnline1 ? `<a href="${item.linkOnline1}">Link online 2</a>` : null,
+        item.linkOnline2 ? `<a href="${item.linkOnline2}">Link online 3</a>` : null,
+      ].filter(Boolean).join(' ');
       const tamNgung = item.isTamNgung ? " [Nghỉ]" : "";
-      const giangVien = item.chiTiets.find(
-        (detail) => detail.label === "Giảng viên"
-      )?.value || '';
-      const gio = item.chiTiets.find(
-        (detail) => detail.label === "Giờ"
-      )?.value || '';
+      const details = item.chiTiets
+        .filter((detail) => detail.value)
+        .map((detail) => `<b>${detail.label}</b>: ${detail.value}`)
+        .join('\n');
+
 
       return (
         `<b>Ngày:</b> ${formattedDate}\n` +
-        `<b>Tiết:</b> ${tietHoc}\n` +
-        `<b>Giờ:</b> ${gio}\n` +
-        `<b>Môn học:</b> ${tenMonHoc}\n` +
-        `<b>Phòng:</b> ${phongHoc}\n` +
         `<b>Loại:</b> ${loaiLich}${tamNgung}\n` +
-        `<b>Giảng viên:</b> ${giangVien}`
+        `<b>Môn học:</b> ${tenMonHoc}\n` +
+        details + (linkOnlines ? `\n<b>Link online:</b> ${linkOnlines}` : "")
       );
     })
     .join("\n\n");
