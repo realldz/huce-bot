@@ -21,7 +21,8 @@
     "dotenv": "^16.6.1",
     "node-schedule": "^2.1.1",
     "sqlite3": "^5.1.7",
-    "winston": "^3.18.3"
+    "winston": "^3.18.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@telegraf/types": "^8.3.1",

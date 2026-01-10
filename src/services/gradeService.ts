@@ -6,6 +6,7 @@ import { BotContext } from '@/interfaces/common';
 import cacheModel from '@/database/cacheModel';
 import { InlineKeyboardButton } from '@telegraf/types';
 import { formatGradeDetail, formatGradeDetailRow } from '@/utils/helpers/grade';
+import { generateGradeExcel } from '@/utils/helpers/excel';
 
 export async function fetchGradesAndCache(ctx: BotContext) {
   const user = ctx.state.user;
@@ -108,4 +109,19 @@ export async function handleGradeDetailAction(ctx: BotContext): Promise<[string 
   });
   return [tenMonHoc, rowsText, idDot];
 
+
+}
+
+export async function handleGradeExportAction(ctx: BotContext): Promise<[Buffer | null, string]> {
+  const cacheKey = `${ctx.state.user.telegramId}_${ctx.state.user.studentId}_grades`;
+  const cachedData = await cacheModel.get<{ grades: GradesResponse }>(cacheKey);
+
+  if (!cachedData) {
+    return [null, ''];
+  }
+
+  const buffer = generateGradeExcel(cachedData.grades);
+  const filename = `Bang_diem_${ctx.state.user.studentId}.xlsx`;
+
+  return [buffer, filename];
 }

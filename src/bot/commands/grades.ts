@@ -6,6 +6,7 @@ import { GradesResponse } from '@/interfaces/sinhvien/grades';
 import { InlineKeyboardButton } from '@telegraf/types';
 
 export function initGradesActions(bot: Telegraf<BotContext>) {
+  bot.action('grade/export', async (ctx) => handleExportAction(ctx));
   bot.action(/grade\/detail\/([^|]+)/, async (ctx) => handleGradeDetailAction(ctx));
   bot.action(/grade\/(.+)/, async (ctx) => handleGradesAction(ctx));
   bot.action(/grade/, async (ctx) => handler(ctx));
@@ -44,9 +45,29 @@ async function handleGradeDetailAction(ctx: BotContext) {
   await ctx.answerCbQuery();
 }
 
+async function handleExportAction(ctx: BotContext) {
+  try {
+    await ctx.answerCbQuery('🚀 Đang xử lý xuất file...', { cache_time: 10 });
+    await ctx.sendChatAction('upload_document');
+
+    const [buffer, filename] = await gradeService.handleGradeExportAction(ctx);
+    if (buffer) {
+      await ctx.replyWithDocument({ source: buffer, filename: filename });
+    } else {
+      await ctx.reply('⚠️ Dữ liệu đã hết hạn, vui lòng tra cứu lại /grades');
+    }
+  } catch (error) {
+    logger.error('Export error: ', error);
+    await ctx.answerCbQuery('Có lỗi khi xuất file', { show_alert: true });
+  }
+}
+
 async function handleGradeHomeAction(ctx: BotContext, grades: GradesResponse) {
   const overview = await gradeService.sendOverviewMessage(ctx, grades);
   const [semesterSummary, buttons = []] = await gradeService.sendSemesterSummaryMessage(ctx, grades);
+
+  // Add Export button
+  buttons.unshift([{ text: '📥 Xuất file Excel', callback_data: 'grade/export' }]);
 
   const responseText = `<b>Tổng quan kết quả học tập:</b>\n${overview}\n\n<b>Tổng kết học kỳ:</b>\n\n${semesterSummary}\n\nChọn học kỳ để xem chi tiết:`;
 
