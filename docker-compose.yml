@@ -8,8 +8,8 @@
 # Trên server, dùng image đã build sẵn trên GitHub (xem .github/workflows/docker-publish.yml):
 #   docker compose pull && docker compose up -d --no-build
 #
-# Yêu cầu: file .env phải tồn tại (xem .env.example) và file ./users.db phải có sẵn
-# trước lần chạy đầu tiên (bot tự tạo bảng, nhưng KHÔNG tự tạo file nếu mount sai kiểu).
+# Yêu cầu: file .env phải tồn tại (xem .env.example). Thư mục ./data chứa SQLite do Docker
+# tự tạo khi chưa có — KHÔNG cần tạo file database trước, và cũng đừng tạo ./data dạng file.
 
 services:
   bot:
@@ -34,15 +34,23 @@ services:
       # nên "0 0 6 * * *" sẽ bắn lúc 13:00 giờ Việt Nam nếu thiếu biến này.
       TZ: Asia/Ho_Chi_Minh
 
+      # Ghi đè DB_PATH của .env (environment thắng env_file) để chắc chắn database nằm trong
+      # volume bên dưới. Nhờ vậy một .env cũ trên server cũng không thể làm DB rơi vào
+      # filesystem của container rồi mất sạch dữ liệu khi container được tạo lại.
+      DB_PATH: /data/users.db
+
     volumes:
-      # SQLite: mount đúng file users.db của repo vào vị trí mà DB_PATH=users.db trong .env trỏ tới
-      # (workdir là /usr/src/app). Dữ liệu người dùng nằm lại trên máy host, không mất khi
-      # `docker compose down` hay tạo lại container.
-      # LƯU Ý: nếu ./users.db không tồn tại, Docker sẽ tạo một THƯ MỤC cùng tên và sqlite3 báo lỗi.
-      - ./users.db:/usr/src/app/users.db
+      # SQLite nằm trong thư mục ./data trên host, file thật là ./data/users.db.
+      # Docker tự tạo ./data nếu chưa có (thư mục là thứ nó cần), nên không còn cảnh
+      # mount file users.db bị biến thành thư mục rỗng rồi SQLITE_CANTOPEN như trước.
+      - ./data:/data
 
       # winston ghi song song ra logs/bot.log; mount để đọc file log trực tiếp trên host.
       - ./logs:/usr/src/app/logs
+
+      # Nếu SQLite qua bind mount từ Windows báo "database is locked" (hiếm gặp), thay dòng
+      # ./data:/data bằng named volume "huce-bot-data:/data" và khai báo khối
+      # "volumes:" với "huce-bot-data:" ở cấp cao nhất của file này.
 
     # docker-init thu hồi process con và chuyển SIGTERM/SIGINT sạch sẽ cho bun (xem src/index.ts).
     init: true
@@ -53,17 +61,3 @@ services:
     # trong .env, bỏ comment khối dưới, và đặt bot sau reverse proxy HTTPS (Telegram chỉ gọi HTTPS).
     # ports:
     #   - "3000:3000"
-
-# ---------------------------------------------------------------------------
-# Phương án thay thế cho DB — ổn định hơn nếu SQLite qua bind mount từ Windows bị
-# chậm hoặc báo "database is locked". Khi đó: đổi DB_PATH trong .env thành /data/users.db,
-# bỏ comment "environment" và volume named dưới đây, và bỏ dòng mount ./users.db ở trên.
-#
-#    environment:
-#      DB_PATH: /data/users.db
-#    volumes:
-#      - huce-bot-data:/data
-#
-# volumes:
-#   huce-bot-data:
-# ---------------------------------------------------------------------------

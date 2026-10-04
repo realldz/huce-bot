@@ -16,6 +16,7 @@ node_modules
 logs/
 
 # Database (SQLite cục bộ - không đưa dữ liệu local vào image)
+data/
 *.db
 *.db-journal
 *.db-wal
