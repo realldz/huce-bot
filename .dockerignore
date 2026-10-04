@@ -14,3 +14,10 @@ node_modules
 
 # Logs
 logs/
+
+# Database (SQLite cục bộ - không đưa dữ liệu local vào image)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+**/*.db

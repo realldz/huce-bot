@@ -1,0 +1,69 @@
+# docker-compose.yml — huce-bot
+#
+# Chạy:        docker compose up -d --build
+# Xem log:     docker compose logs -f
+# Dừng:        docker compose down
+# Build lại:   docker compose up -d --build
+#
+# Trên server, dùng image đã build sẵn trên GitHub (xem .github/workflows/docker-publish.yml):
+#   docker compose pull && docker compose up -d --no-build
+#
+# Yêu cầu: file .env phải tồn tại (xem .env.example) và file ./users.db phải có sẵn
+# trước lần chạy đầu tiên (bot tự tạo bảng, nhưng KHÔNG tự tạo file nếu mount sai kiểu).
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Tên image trùng với image được publish lên GHCR, nên cùng một file compose
+    # dùng được cho cả hai luồng:
+    #   - máy dev:   docker compose up -d --build     (build từ Dockerfile, gắn tag này)
+    #   - server:    docker compose pull && docker compose up -d --no-build
+    image: ghcr.io/realldz/huce-bot:latest
+    container_name: huce-bot
+
+    # Toàn bộ biến trong .env được nạp vào container: TELEGRAM_TOKEN, SCHOOL_API_BASEURL,
+    # DB_PATH, CLIENT_SECRET, SCHOOL_CODE, LOG_LEVEL, WEBHOOK_DOMAIN, WEBHOOK_PATH, PORT.
+    # .env nằm trong .dockerignore nên token không bị bake vào image, chỉ truyền lúc runtime.
+    env_file:
+      - .env
+
+    environment:
+      # node-schedule chạy cron theo giờ local của container. Image Debian mặc định là UTC,
+      # nên "0 0 6 * * *" sẽ bắn lúc 13:00 giờ Việt Nam nếu thiếu biến này.
+      TZ: Asia/Ho_Chi_Minh
+
+    volumes:
+      # SQLite: mount đúng file users.db của repo vào vị trí mà DB_PATH=users.db trong .env trỏ tới
+      # (workdir là /usr/src/app). Dữ liệu người dùng nằm lại trên máy host, không mất khi
+      # `docker compose down` hay tạo lại container.
+      # LƯU Ý: nếu ./users.db không tồn tại, Docker sẽ tạo một THƯ MỤC cùng tên và sqlite3 báo lỗi.
+      - ./users.db:/usr/src/app/users.db
+
+      # winston ghi song song ra logs/bot.log; mount để đọc file log trực tiếp trên host.
+      - ./logs:/usr/src/app/logs
+
+    # docker-init thu hồi process con và chuyển SIGTERM/SIGINT sạch sẽ cho bun (xem src/index.ts).
+    init: true
+    restart: unless-stopped
+
+    # Chế độ long polling (WEBHOOK_DOMAIN rỗng trong .env) không cần map port.
+    # Khi dùng webhook: bỏ comment "EXPOSE 3000" trong Dockerfile, điền WEBHOOK_DOMAIN + PORT
+    # trong .env, bỏ comment khối dưới, và đặt bot sau reverse proxy HTTPS (Telegram chỉ gọi HTTPS).
+    # ports:
+    #   - "3000:3000"
+
+# ---------------------------------------------------------------------------
+# Phương án thay thế cho DB — ổn định hơn nếu SQLite qua bind mount từ Windows bị
+# chậm hoặc báo "database is locked". Khi đó: đổi DB_PATH trong .env thành /data/users.db,
+# bỏ comment "environment" và volume named dưới đây, và bỏ dòng mount ./users.db ở trên.
+#
+#    environment:
+#      DB_PATH: /data/users.db
+#    volumes:
+#      - huce-bot-data:/data
+#
+# volumes:
+#   huce-bot-data:
+# ---------------------------------------------------------------------------
