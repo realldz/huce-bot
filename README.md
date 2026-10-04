@@ -84,7 +84,7 @@ docker compose pull
 docker compose up -d --no-build
 ```
 
-A package is private when first published, so an unauthenticated `docker compose pull` fails with `denied`. Either change it under *Packages → huce-bot → Package settings → Change visibility*, or log in with a classic PAT that has the `read:packages` scope:
+The published package is publicly readable, so `docker compose pull` needs no login. If you ever switch it to private under *Packages → huce-bot → Package settings → Change visibility*, authenticate first with a classic PAT that has the `read:packages` scope:
 
 ```bash
 echo $CR_PAT | docker login ghcr.io -u realldz --password-stdin

@@ -1,5 +1,5 @@
 # Stage 1: Install dependencies
-FROM oven/bun:1 as installer
+FROM oven/bun:1 AS installer
 WORKDIR /usr/src/app
 
 # Copy package manifests
