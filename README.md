@@ -97,6 +97,7 @@ Notes:
 - If SQLite over a Windows bind mount reports `database is locked`, replace the `./data:/data` mount with a named volume (`huce-bot-data:/data`) and declare a top-level `volumes:` key.
 - `TZ=Asia/Ho_Chi_Minh` is set in the compose file because `node-schedule` evaluates the cron expressions in the container's local time, which is UTC by default.
 - Long polling is the default (`WEBHOOK_DOMAIN` empty), so no port is published. For webhook mode, uncomment `EXPOSE 3000` in the `Dockerfile`, set `WEBHOOK_DOMAIN` and `PORT` in `.env`, uncomment the `ports` block in `docker-compose.yml`, and put the bot behind an HTTPS reverse proxy.
+- Polling survives a network drop instead of going quiet. Bun swaps `require('node-fetch')` for a shim over its native `fetch`, which ignores the 500 s request timeout telegraf sets and reports failures as plain `Error`s rather than `FetchError`s, so telegraf's own retry branch never runs and a dropped connection either hangs the request for minutes or kills polling outright. [`src/bot/pollingResilience.ts`](src/bot/pollingResilience.ts) puts an 80 s deadline on every `getUpdates` and re-classifies network errors and `409 Conflict` as retryable, so polling resumes about 5 s after the network returns; [`src/index.ts`](src/index.ts) is the last-resort supervisor that relaunches polling, with a delay, if it ever dies.
 
 ## Commands
 
