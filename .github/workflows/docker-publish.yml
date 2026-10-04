@@ -40,6 +40,11 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Runner là amd64, QEMU dịch lệnh để build được cả arm64.
+      # Bỏ bước này đi thì build arm64 sẽ lỗi "exec format error" khi chạy RUN trong Dockerfile.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       # Bỏ qua trên pull request: PR từ fork không có quyền ghi package.
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
@@ -72,10 +77,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Mặc định chỉ linux/amd64 (Windows, hầu hết VPS).
-          # Muốn thêm ARM (Oracle Cloud ARM, Raspberry Pi): đổi thành
-          # "linux/amd64,linux/arm64" và thêm bước docker/setup-qemu-action@v3
-          # trước bước login - build sẽ lâu hơn đáng kể.
-          platforms: linux/amd64
+          # Đủ cả hai kiến trúc mà oven/bun:1 hỗ trợ (Bun không có bản 32-bit ARM arm/v7).
+          # arm64 build qua QEMU nên chậm hơn amd64; cache gha được tách riêng theo kiến trúc.
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max

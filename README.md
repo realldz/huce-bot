@@ -75,7 +75,7 @@ docker compose down            # stop
 docker compose up -d --build   # rebuild after a code change
 ```
 
-Images are also built on GitHub: [`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) runs on every push to `main`, on every `v*` tag, and on manual dispatch, then publishes to the GitHub Container Registry as `ghcr.io/realldz/huce-bot:latest` (plus `main`, `v1.2.3` and `sha-<commit>` tags). It needs no repository secrets — it authenticates with the built-in `GITHUB_TOKEN`, and `.env` plus `*.db` stay out of the image because of `.dockerignore`.
+Images are also built on GitHub: [`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) runs on every push to `main`, on every `v*` tag, and on manual dispatch, then publishes to the GitHub Container Registry as `ghcr.io/realldz/huce-bot:latest` (plus `main`, `v1.2.3` and `sha-<commit>` tags). The image is multi-arch — `linux/amd64` and `linux/arm64` — so it also runs on ARM servers, and Docker picks the right one automatically. It needs no repository secrets — it authenticates with the built-in `GITHUB_TOKEN`, and `.env` plus `*.db` stay out of the image because of `.dockerignore`.
 
 To deploy a server from the published image instead of building from source:
 
